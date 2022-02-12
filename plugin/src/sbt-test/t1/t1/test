@@ -1,0 +1,28 @@
+> compile
+> show unusedCodeConfig
+> projects
+> show baseDirectory
+
+> show unusedCode
+
+$ exec cat a1/src/main/scala/B.scala
+$ exec cat a1/src/main/scala/A1.scala
+$ exec cat a2/src/main/scala/A2.scala
+$ exec cat a3/src/main/scala/A3.scala
+
+> scalafixAll WarnUnusedCode
+> scalafixAll RemoveUnusedCode
+
+$ exec cat a1/src/main/scala/B.scala
+-$ exists a1/src/main/scala/A1.scala
+-$ exists a1/src/main/scala/package.scala
+-$ exists a2/src/main/scala/A2.scala
+$ exec cat a3/src/main/scala/A3.scala
+
+> a1/run
+
+> compile
+
+# set invalid PathMatcher
+> set Global / unusedCodeConfig ~= (_.copy(excludePath = Set("*")))
+-> unusedCode

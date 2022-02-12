@@ -1,0 +1,13 @@
+> compile
+
+> projects
+> show baseDirectory
+
+> show unusedCode
+> scalafixAll WarnUnusedCode
+> scalafixAll RemoveUnusedCode
+
+$ exec cat a1/Hello.scala
+
+> a1/runMain hello.x1
+> a1/runMain hello.x2
