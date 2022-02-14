@@ -11,6 +11,7 @@ $ exec cp -r a3 before/
 > show baseDirectory
 
 > show unusedCode
+> check
 
 $ exec cat a1/src/main/scala/B.scala
 $ exec cat a1/src/main/scala/A1.scala

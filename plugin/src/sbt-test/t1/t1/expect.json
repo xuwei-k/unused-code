@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "value": "A1",
+      "path": "a1/src/main/scala/A1.scala"
+    },
+    {
+      "value": "X1",
+      "path": "a1/src/main/scala/A1.scala"
+    },
+    {
+      "value": "Z1",
+      "path": "a1/src/main/scala/A1.scala"
+    },
+    {
+      "value": "foo",
+      "path": "a1/src/main/scala/package.scala"
+    },
+    {
+      "value": "A2",
+      "path": "a2/src/main/scala/A2.scala"
+    },
+    {
+      "value": "X2",
+      "path": "a2/src/main/scala/A2.scala"
+    },
+    {
+      "value": "Z2",
+      "path": "a2/src/main/scala/A2.scala"
+    }
+  ]
+}

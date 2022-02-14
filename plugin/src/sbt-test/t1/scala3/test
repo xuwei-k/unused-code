@@ -4,6 +4,7 @@
 > show baseDirectory
 
 > show unusedCode
+> check
 > scalafixAll WarnUnusedCode
 > scalafixAll RemoveUnusedCode
 
