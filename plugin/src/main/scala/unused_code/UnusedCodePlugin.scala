@@ -13,7 +13,7 @@ import scala.concurrent.duration.*
 object UnusedCodePlugin extends AutoPlugin {
   object autoImport {
     val unusedCode = taskKey[String]("analyze code and output intermediate file")
-    val unusedCodeConfig = taskKey[UnusedCodeConfig]("config file for UnusedCode")
+    val unusedCodeConfig = taskKey[UnusedCodeConfig]("config for UnusedCode")
   }
   import autoImport.*
 
