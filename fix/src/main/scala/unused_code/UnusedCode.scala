@@ -52,11 +52,22 @@ object UnusedCode {
     implicitly[ConfDecoder[UnusedCodeConfig]].read(c).get
   }
 
+  private[this] val convertDialect: Map[unused_code.Dialect, scala.meta.Dialect] = Map(
+    unused_code.Dialect.Scala210 -> scala.meta.dialects.Scala210,
+    unused_code.Dialect.Scala211 -> scala.meta.dialects.Scala211,
+    unused_code.Dialect.Scala212 -> scala.meta.dialects.Scala212,
+    unused_code.Dialect.Scala213 -> scala.meta.dialects.Scala213,
+    unused_code.Dialect.Scala212Source3 -> scala.meta.dialects.Scala212Source3,
+    unused_code.Dialect.Scala213Source3 -> scala.meta.dialects.Scala213Source3,
+    unused_code.Dialect.Scala3 -> scala.meta.dialects.Scala3
+  )
+
   def main(arg: String): String = {
     val conf = jsonToConfig(arg)
     val result = conf.files.flatMap { file =>
       val input = Input.File(new File(file))
-      val tree = implicitly[Parse[Source]].apply(input, scala.meta.dialects.Scala213).get
+      val dialect = convertDialect.getOrElse(conf.dialect, scala.meta.dialects.Scala213)
+      val tree = implicitly[Parse[Source]].apply(input, dialect).get
       run(tree, file, conf.excludeMainMethod)
     }
     writeResult(result, conf)

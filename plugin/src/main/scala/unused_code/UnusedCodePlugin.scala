@@ -85,7 +85,7 @@ object UnusedCodePlugin extends AutoPlugin {
     },
     unusedCodeConfig := Def.taskDyn {
       val s = state.value
-      val dialect = scalaBinaryVersion.value match {
+      val dialect = (LocalRootProject / scalaBinaryVersion).value match {
         case "2.10" =>
           Dialect.Scala210
         case "2.11" =>
