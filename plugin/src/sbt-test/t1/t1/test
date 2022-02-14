@@ -1,3 +1,10 @@
+$ exec mkdir -p before/a1/src/main/scala
+$ exec mkdir -p before/a2/src/main/scala
+$ exec mkdir -p before/a3/src/main/scala
+$ exec cp -r a1 before/
+$ exec cp -r a2 before/
+$ exec cp -r a3 before/
+
 > compile
 > show unusedCodeConfig
 > projects
@@ -9,15 +16,20 @@ $ exec cat a1/src/main/scala/B.scala
 $ exec cat a1/src/main/scala/A1.scala
 $ exec cat a2/src/main/scala/A2.scala
 $ exec cat a3/src/main/scala/A3.scala
+$ exec cat a2/src/main/scala/B2.scala
 
 > scalafixAll WarnUnusedCode
 > scalafixAll RemoveUnusedCode
 
-$ exec cat a1/src/main/scala/B.scala
 -$ exists a1/src/main/scala/A1.scala
 -$ exists a1/src/main/scala/package.scala
 -$ exists a2/src/main/scala/A2.scala
-$ exec cat a3/src/main/scala/A3.scala
+
+$ must-mirror before/a1/src/main/scala/B.scala a1/src/main/scala/B.scala
+$ must-mirror before/a3/src/main/scala/A3.scala a3/src/main/scala/A3.scala
+
+# don't delete implicits
+$ must-mirror before/a2/src/main/scala/B2.scala a2/src/main/scala/B2.scala
 
 > a1/run
 
