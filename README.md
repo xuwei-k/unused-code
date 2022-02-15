@@ -28,12 +28,12 @@ addSbtPlugin("com.github.xuwei-k" % "unused-code-plugin" % "version")
 ```scala
 import scala.concurrent.duration.*
 
-Global / unusedCodeConfig ~= {
-  _.copy(
+Global / unusedCodeConfig ~= { c =>
+  c.copy(
     excludeNameRegex = Set(
       ".*Server"
     ),
-    excludePath = Set(
+    excludePath = c.excludePath ++ Set(
       "glob:some-project/**"
     ),
     excludeGitLastCommit = Some(
