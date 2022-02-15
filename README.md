@@ -20,3 +20,27 @@ addSbtPlugin("com.github.xuwei-k" % "unused-code-plugin" % "version")
 > scalafix WarnUnusedCode
 > scalafix RemoveUnusedCode
 ```
+
+### config example
+
+`build.sbt`
+
+```scala
+import scala.concurrent.duration.*
+
+Global / unusedCodeConfig ~= {
+  _.copy(
+    excludeNameRegex = Set(
+      ".*Server"
+    ),
+    excludePath = Set(
+      "glob:some-project/**"
+    ),
+    excludeGitLastCommit = Some(
+      365.days
+    ),
+    excludeMainMethod = false,
+    dialect = unused_code.Dialect.Scala3,
+  )
+}
+```
