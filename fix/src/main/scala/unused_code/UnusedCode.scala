@@ -211,9 +211,18 @@ object UnusedCode {
         if (excludeMainMethod && isMainMethod.isDefinedAt(x)) {
           Nil
         } else {
-          FindResult.Define(
-            value = x.name.value,
-          ) :: Nil
+          // TODO unary methods https://github.com/xuwei-k/unused-code/issues/3
+          val setterSuffix = "_="
+          if (x.name.value.endsWith(setterSuffix)) {
+            // TODO improvement
+            FindResult.Define(
+              value = x.name.value.dropRight(setterSuffix.length),
+            ) :: Nil
+          } else {
+            FindResult.Define(
+              value = x.name.value,
+            ) :: Nil
+          }
         }
       case DefineValue(_, mods, name) if filterMods(mods) =>
         FindResult.Define(

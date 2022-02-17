@@ -27,6 +27,7 @@ $ exec cat a2/src/main/scala/B2.scala
 -$ exists a2/src/main/scala/A2.scala
 
 $ must-mirror before/a1/src/main/scala/B.scala a1/src/main/scala/B.scala
+$ must-mirror before/a1/src/main/scala/D1.scala a1/src/main/scala/D1.scala
 $ must-mirror before/a3/src/main/scala/A3.scala a3/src/main/scala/A3.scala
 
 # don't delete implicits
