@@ -1,3 +1,20 @@
 {
-  "values": []
+  "values": [
+    {
+      "value": "apply",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "unapply",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "unapplySeq",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "update",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    }
+  ]
 }
