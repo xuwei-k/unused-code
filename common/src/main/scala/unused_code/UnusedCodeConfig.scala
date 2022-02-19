@@ -20,6 +20,7 @@ final case class UnusedCodeConfig(
   excludeGitLastCommit: Option[Duration],
   excludeMainMethod: Boolean,
   dialect: Dialect,
+  excludeMethodRegex: Set[String],
 ) {
   def pathMatchers: Seq[PathMatcher] = {
     val fs = FileSystems.getDefault
@@ -27,6 +28,11 @@ final case class UnusedCodeConfig(
   }
 
   private[this] val regex: Seq[Pattern] = excludeNameRegex.map(Pattern.compile).toList
+  private[this] val regexMethod: Seq[Pattern] = excludeMethodRegex.map(Pattern.compile).toList
+
+  def isExcludeMethod(name: String): Boolean = regexMethod.exists { p =>
+    p.matcher(name).matches
+  }
 
   def isExcludeName(name: String): Boolean = regex.exists { p =>
     p.matcher(name).matches

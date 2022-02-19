@@ -28,15 +28,13 @@ $ exec cat a2/src/main/scala/B2.scala
 
 $ must-mirror before/a1/src/main/scala/B.scala a1/src/main/scala/B.scala
 $ must-mirror before/a1/src/main/scala/D1.scala a1/src/main/scala/D1.scala
+$ must-mirror before/a1/src/main/scala/DefaultExcludeMethods.scala a1/src/main/scala/DefaultExcludeMethods.scala
 $ must-mirror before/a3/src/main/scala/A3.scala a3/src/main/scala/A3.scala
 
 # don't delete implicits
 $ must-mirror before/a2/src/main/scala/B2.scala a2/src/main/scala/B2.scala
 
-> a1/run
+> a1/runMain C
+> a1/runMain DefaultExcludeMethods
 
 > compile
-
-# set invalid PathMatcher
-> set Global / unusedCodeConfig ~= (_.copy(excludePath = Set("*")))
--> unusedCode

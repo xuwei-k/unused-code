@@ -43,6 +43,7 @@ object UnusedCode {
       excludeGitLastCommit = None,
       excludeMainMethod = true,
       dialect = Dialect.Scala213Source3,
+      excludeMethodRegex = Set.empty,
     )
     metaconfig.generic.deriveDecoder[UnusedCodeConfig](empty)
   }
@@ -68,7 +69,7 @@ object UnusedCode {
       val input = Input.File(new File(file))
       val dialect = convertDialect.getOrElse(conf.dialect, scala.meta.dialects.Scala213)
       val tree = implicitly[Parse[Source]].apply(input, dialect).get
-      run(tree, file, conf.excludeMainMethod)
+      run(tree, file, conf)
     }
     writeResult(result, conf)
   }
@@ -197,18 +198,18 @@ object UnusedCode {
     !mods.exists(m => m.is[Mod.Implicit] || m.is[Mod.Override] || m.is[Mod.Inline])
   }
 
-  private[this] def run(tree: Tree, path: String, excludeMainMethod: Boolean): List[FindResult] = {
+  private[this] def run(tree: Tree, path: String, config: UnusedCodeConfig): List[FindResult] = {
     tree.collect {
       case x: Defn.Object if filterMods(x.mods) =>
-        if (excludeMainMethod && hasMainMethod(x)) {
+        if (config.excludeMainMethod && hasMainMethod(x)) {
           Nil
         } else {
           FindResult.Define(
             value = x.name.value,
           ) :: Nil
         }
-      case x: Defn.Def if filterMods(x.mods) =>
-        if (excludeMainMethod && isMainMethod.isDefinedAt(x)) {
+      case x: Defn.Def if filterMods(x.mods) && !config.isExcludeMethod(x.name.value) =>
+        if (config.excludeMainMethod && isMainMethod.isDefinedAt(x)) {
           Nil
         } else {
           // TODO unary methods https://github.com/xuwei-k/unused-code/issues/3
@@ -224,10 +225,15 @@ object UnusedCode {
             ) :: Nil
           }
         }
-      case DefineValue(_, mods, name) if filterMods(mods) =>
-        FindResult.Define(
-          value = name,
-        ) :: Nil
+      case DefineValue(t, mods, name) if filterMods(mods) =>
+        t match {
+          case _: Defn.Def if config.isExcludeMethod(name) =>
+            Nil
+          case _ =>
+            FindResult.Define(
+              value = name,
+            ) :: Nil
+        }
       case x: Term.Name =>
         FindResult.Use(
           value = x.value,

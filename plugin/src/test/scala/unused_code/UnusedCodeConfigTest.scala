@@ -22,7 +22,7 @@ object UnusedCodeConfigTest extends Scalaprops {
       } yield Duration(s"${a}.${b}")
       Gen.elements(x, xs *)
     }
-    Gen.from7(UnusedCodeConfig.apply)
+    Gen.from8(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>
