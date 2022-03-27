@@ -93,7 +93,7 @@ object UnusedCodePlugin extends AutoPlugin {
           Dialect.Scala211
         case "2.12" =>
           if (scalacOptions.value.contains("-Xsource:3")) {
-            Dialect.Scala213Source3
+            Dialect.Scala212Source3
           } else {
             Dialect.Scala212
           }
