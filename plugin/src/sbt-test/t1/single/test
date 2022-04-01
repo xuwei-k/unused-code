@@ -1,0 +1,6 @@
+> compile
+> show unusedCodeConfig
+> projects
+> show unusedCode
+> scalafixAll WarnUnusedCode
+> scalafixAll RemoveUnusedCode
