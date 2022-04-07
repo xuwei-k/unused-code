@@ -122,7 +122,7 @@ lazy val fix = projectMatrix
     commonSettings,
     name := "unused-code-scalafix",
     description := "scalafix rules unused-code",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.9.34",
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.10.0",
     Compile / resourceGenerators += Def.task {
       val rules = (Compile / compile).value
         .asInstanceOf[sbt.internal.inc.Analysis]
