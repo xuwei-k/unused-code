@@ -88,6 +88,7 @@ lazy val plugin = project
     sbtPlugin := true,
     name := "unused-code-plugin",
     moduleName := "unused-code-plugin",
+    Test / dependencyClasspath := (Test / dependencyClasspath).value.reverse,
   )
 
 lazy val common = projectMatrix
