@@ -35,7 +35,7 @@ val commonSettings = Def.settings(
   scalacOptions ++= Seq(
     "-deprecation",
   ),
-  pomExtra := (
+  pomExtra :=
     <developers>
     <developer>
       <id>xuwei-k</id>
@@ -46,8 +46,7 @@ val commonSettings = Def.settings(
   <scm>
     <url>git@github.com:xuwei-k/unused-code.git</url>
     <connection>scm:git:git@github.com:xuwei-k/unused-code.git</connection>
-  </scm>
-  ),
+  </scm>,
   organization := "com.github.xuwei-k",
   homepage := Some(url("https://github.com/xuwei-k/unused-code")),
   licenses := List(
