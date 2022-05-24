@@ -7,7 +7,7 @@ val commonSettings = Def.settings(
   publishTo := sonatypePublishToBundle.value,
   libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.12" % Test,
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
-  Compile / packageSrc / mappings ++= (Compile / managedSources).value.map { f =>
+  Compile / packageSrc / mappings ++= Compile / managedSources.value.map { f =>
     (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
   },
   Compile / doc / scalacOptions ++= {
@@ -88,7 +88,7 @@ lazy val plugin = project
     sbtPlugin := true,
     name := "unused-code-plugin",
     moduleName := "unused-code-plugin",
-    Test / dependencyClasspath := (Test / dependencyClasspath).value.reverse,
+    Test / dependencyClasspath := Test / dependencyClasspath.value.reverse,
   )
 
 lazy val common = projectMatrix
