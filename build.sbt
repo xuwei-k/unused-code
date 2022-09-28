@@ -5,7 +5,7 @@ def Scala213 = "2.13.9"
 
 val commonSettings = Def.settings(
   publishTo := sonatypePublishToBundle.value,
-  libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.13" % Test,
+  libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.14" % Test,
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / packageSrc / mappings ++= (Compile / managedSources).value.map { f =>
     (f, f.relativeTo((Compile / sourceManaged).value).get.getPath)
