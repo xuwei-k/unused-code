@@ -1,4 +1,4 @@
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.13")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "3.9.14")
 
 addSbtPlugin("com.eed3si9n" % "sbt-projectmatrix" % "0.9.0")
 
