@@ -21,6 +21,7 @@ final case class UnusedCodeConfig(
   excludeMainMethod: Boolean,
   dialect: Dialect,
   excludeMethodRegex: Set[String],
+  baseDir: String,
 ) {
   def pathMatchers: Seq[PathMatcher] = {
     val fs = FileSystems.getDefault

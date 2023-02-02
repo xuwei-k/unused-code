@@ -20,7 +20,7 @@ class WarnUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("Wa
       .map(newConfig => new WarnUnusedCode(newConfig))
   }
 
-  private[this] val unusedNames: Set[String] = {
+  private[this] lazy val unusedNames: Set[String] = {
     FindResults.loadFromFile(Paths.get(config.outputPath)).values.map(_.value).toSet
   }
 

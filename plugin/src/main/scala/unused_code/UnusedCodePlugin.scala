@@ -1,5 +1,6 @@
 package unused_code
 
+import java.nio.charset.StandardCharsets
 import sbt.*
 import sbt.Keys.*
 import sbt.plugins.JvmPlugin
@@ -12,7 +13,7 @@ import scala.concurrent.duration.*
 
 object UnusedCodePlugin extends AutoPlugin {
   object autoImport {
-    val unusedCode = taskKey[String]("analyze code and output intermediate file")
+    val unusedCode = taskKey[Unit]("analyze code and output intermediate file")
     val unusedCodeConfig = taskKey[UnusedCodeConfig]("config for UnusedCode")
   }
   import autoImport.*
@@ -32,7 +33,7 @@ object UnusedCodePlugin extends AutoPlugin {
     implicit val dialectInstance: JsonFormat[Dialect] =
       from(strFormat)(Dialect.map, _.value)
 
-    caseClass8(UnusedCodeConfig, UnusedCodeConfig.unapply)(
+    caseClass9(UnusedCodeConfig, UnusedCodeConfig.unapply)(
       "files",
       "scalafixConfigPath",
       "excludeNameRegex",
@@ -41,6 +42,7 @@ object UnusedCodePlugin extends AutoPlugin {
       "excludeMainMethod",
       "dialect",
       "excludeMethodRegex",
+      "baseDir",
     )
   }
 
@@ -54,21 +56,62 @@ object UnusedCodePlugin extends AutoPlugin {
     }
   }
 
-  private[this] def generateProject = {
-    val id = "unused-code-runner"
-    Project(id = id, base = file("target") / id).settings(
-      libraryDependencies += {
-        "com.github.xuwei-k" %% "unused-code-scalafix" % UnusedCodeBuildInfo.version cross CrossVersion.for3Use2_13
-      },
-    )
+  private def sbtLauncher: Def.Initialize[Task[File]] = Def.task {
+    val Seq(launcher) = (LocalRootProject / dependencyResolution).value
+      .retrieve(
+        dependencyId = "org.scala-sbt" % "sbt-launch" % (unusedCode / sbtVersion).value,
+        scalaModuleInfo = None,
+        retrieveDirectory = (ThisBuild / csrCacheDirectory).value,
+        log = streams.value.log
+      )
+      .left
+      .map(e => throw e.resolveException)
+      .merge
+      .distinct
+    launcher
   }
 
-  // avoid extraProjects https://github.com/sbt/sbt/issues/4947
-  override def derivedProjects(proj: ProjectDefinition[?]): Seq[Project] = {
-    if (proj.projectOrigin == ProjectOrigin.Organic) {
-      Seq(generateProject)
-    } else {
-      Nil
+  // avoid extraProjects and derivedProjects
+  // https://github.com/sbt/sbt/issues/6860
+  // https://github.com/sbt/sbt/issues/4947
+  private[this] def runUnusedCode(
+    base: File,
+    config: UnusedCodeConfig,
+    launcher: File,
+    forkOptions: ForkOptions,
+  ): Either[Int, Unit] = {
+    val buildSbt =
+      s"""|name := "tmp-unused-code"
+          |logLevel := Level.Warn
+          |scalaVersion := "2.13.10"
+          |libraryDependencies ++= Seq(
+          |  "com.github.xuwei-k" %% "unused-code-scalafix" % "${UnusedCodeBuildInfo.version}"
+          |)
+          |Compile / sources := Nil
+          |""".stripMargin
+
+    IO.withTemporaryDirectory { dir =>
+      val forkOpt = forkOptions.withWorkingDirectory(dir)
+      val in = dir / "in.json"
+      IO.write(dir / "build.sbt", buildSbt.getBytes(StandardCharsets.UTF_8))
+      IO.write(in, config.toJsonString.getBytes(StandardCharsets.UTF_8))
+      val ret = Fork.java.apply(
+        forkOpt,
+        Seq(
+          "-jar",
+          launcher.getCanonicalPath,
+          Seq(
+            "runMain",
+            "unused_code.UnusedCode",
+            s"--input=${in.getCanonicalPath}"
+          ).mkString(" ")
+        )
+      )
+      if (ret == 0) {
+        Right(())
+      } else {
+        Left(ret)
+      }
     }
   }
 
@@ -80,10 +123,11 @@ object UnusedCodePlugin extends AutoPlugin {
     unusedCode / sources := ((Compile / sources).value ** "*.scala").get,
   )
 
-  override def globalSettings: Seq[Def.Setting[?]] = Seq(
+  override def buildSettings: Seq[Def.Setting[?]] = Def.settings(
     ScalafixPlugin.autoImport.scalafixDependencies += {
       "com.github.xuwei-k" %% "unused-code-scalafix" % UnusedCodeBuildInfo.version
     },
+    unusedCode / forkOptions := ForkOptions(),
     unusedCodeConfig := Def.taskDyn {
       val s = state.value
       val dialect = (LocalRootProject / scalaBinaryVersion).value match {
@@ -145,20 +189,21 @@ object UnusedCodePlugin extends AutoPlugin {
             "unapplySeq",
             "update",
           ),
+          baseDir = (LocalRootProject / baseDirectory).value.getCanonicalPath
         )
       }
     }.value,
     unusedCode := {
-      val s = state.value
-      val extracted = Project.extract(s)
       val conf = unusedCodeConfig.value
       val _ = conf.pathMatchers // check syntax error
       val jsonString = conf.toJsonString
       streams.value.log.debug(jsonString)
-      val loader = extracted.runTask(generateProject / Test / testLoader, s)._2
-      val clazz = loader.loadClass("unused_code.UnusedCode")
-      val method = clazz.getMethod("main", classOf[String])
-      method.invoke(null, jsonString).asInstanceOf[String]
+      runUnusedCode(
+        base = (LocalRootProject / baseDirectory).value,
+        config = conf,
+        launcher = sbtLauncher.value,
+        forkOptions = (unusedCode / forkOptions).value
+      ).fold(e => sys.error(s"${unusedCode.key.label} failed ${e}"), x => x)
     },
   )
 }

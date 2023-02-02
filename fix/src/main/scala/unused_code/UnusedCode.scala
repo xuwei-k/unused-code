@@ -44,12 +44,13 @@ object UnusedCode {
       excludeMainMethod = true,
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,
+      baseDir = "",
     )
     metaconfig.generic.deriveDecoder[UnusedCodeConfig](empty)
   }
 
-  private[unused_code] def jsonToConfig(json: String): UnusedCodeConfig = {
-    val c = Conf.parseString(json)(Hocon)
+  private[unused_code] def jsonFileToConfig(json: File): UnusedCodeConfig = {
+    val c = Conf.parseFile(json)(Hocon)
     implicitly[ConfDecoder[UnusedCodeConfig]].read(c).get
   }
 
@@ -63,10 +64,15 @@ object UnusedCode {
     unused_code.Dialect.Scala3 -> scala.meta.dialects.Scala3
   )
 
-  def main(arg: String): String = {
-    val conf = jsonToConfig(arg)
+  def main(args: Array[String]): Unit = {
+    val in = {
+      val key = "--input="
+      args.collectFirst { case arg if arg.startsWith(key) => arg.drop(key.length) }
+        .getOrElse(sys.error("missing --input"))
+    }
+    val conf = jsonFileToConfig(new File(in))
     val result = conf.files.flatMap { file =>
-      val input = Input.File(new File(file))
+      val input = Input.File(new File(conf.baseDir, file))
       val dialect = convertDialect.getOrElse(conf.dialect, scala.meta.dialects.Scala213)
       val tree = implicitly[Parse[Source]].apply(input, dialect).get
       run(tree, file, conf)
@@ -100,11 +106,14 @@ object UnusedCode {
   }
 
   @nowarn("msg=lineStream")
-  private[this] def lastGitCommitMilliSeconds(path: String): Long = {
+  private[this] def lastGitCommitMilliSeconds(base: String, path: String): Long = {
     val default = 0L
     // https://git-scm.com/docs/git-log
-    if (new File(".git").isDirectory) {
-      Process(s"git log -1 --format=%ct ${path}").lineStream_!.headOption.map(_.toLong * 1000L).getOrElse(default)
+    if (new File(base, ".git").isDirectory) {
+      Process(
+        command = Seq("git", "log", "-1", "--format=%ct", path),
+        cwd = Some(new File(base))
+      ).lineStream_!.headOption.map(_.toLong * 1000L).getOrElse(default)
     } else {
       default
     }
@@ -127,7 +136,7 @@ object UnusedCode {
       .filter(x =>
         config.excludeGitLastCommit match {
           case Some(duration) if duration.isFinite =>
-            duration < (currentMillis - lastGitCommitMilliSeconds(x.path)).millis
+            duration < (currentMillis - lastGitCommitMilliSeconds(config.baseDir, x.path)).millis
           case _ =>
             true
         }
@@ -141,14 +150,15 @@ object UnusedCode {
     val json = implicitly[ConfEncoder[FindResults]].write(result).show
     val bytes = json.getBytes(StandardCharsets.UTF_8)
     val path = {
-      val scalafixConfig = new File(config.scalafixConfigPath.getOrElse(defaultScalafixConfigFile))
-      Paths.get {
+      val scalafixConfig = new File(config.baseDir, config.scalafixConfigPath.getOrElse(defaultScalafixConfigFile))
+      val p = {
         if (scalafixConfig.isFile) {
           Conf.parseFile(scalafixConfig)(Hocon).get.as[UnusedCodeScalafixConfig].get.outputPath
         } else {
           UnusedCodeScalafixConfig.default.outputPath
         }
       }
+      new File(config.baseDir, p).toPath
     }
     Files.createDirectories(path.getParent)
     Files.write(path, bytes)

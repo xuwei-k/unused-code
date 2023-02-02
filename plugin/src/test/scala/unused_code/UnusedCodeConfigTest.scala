@@ -5,6 +5,8 @@ import scalaprops.Property
 import scalaprops.Scalaprops
 import UnusedCodePlugin.*
 import org.scalatest.Assertions.*
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 import scala.concurrent.duration.Duration
 
 object UnusedCodeConfigTest extends Scalaprops {
@@ -22,14 +24,19 @@ object UnusedCodeConfigTest extends Scalaprops {
       } yield Duration(s"${a}.${b}")
       Gen.elements(x, xs *)
     }
-    Gen.from8(UnusedCodeConfig.apply)
+    Gen.from9(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>
-    val json = c1.toJsonString
-    val c2 = UnusedCode.jsonToConfig(json)
-    assert(c1 == c2)
-    true
+    val tmp = Files.createTempFile("", ".json")
+    try {
+      Files.write(tmp, c1.toJsonString.getBytes(StandardCharsets.UTF_8))
+      val c2 = UnusedCode.jsonFileToConfig(tmp.toFile)
+      assert(c1 == c2)
+      true
+    } finally {
+      Files.deleteIfExists(tmp)
+    }
   }
 
 }
