@@ -28,7 +28,7 @@ addSbtPlugin("com.github.xuwei-k" % "unused-code-plugin" % "version")
 ```scala
 import scala.concurrent.duration.*
 
-Global / unusedCodeConfig ~= { c =>
+ThisBuild / unusedCodeConfig ~= { c =>
   c.copy(
     excludeNameRegex = Set(
       ".*Server"
