@@ -97,7 +97,7 @@ object UnusedCode {
       (x, x.mods, x.name.value)
     case x @ Defn.Val(_, List(Pat.Var(name)), _, _) =>
       (x, x.mods, name.value)
-    case x @ Defn.Var(_, List(Pat.Var(name)), _, _) =>
+    case x @ Defn.Var.Initial(_, List(Pat.Var(name)), _, _) =>
       (x, x.mods, name.value)
   }
 
@@ -170,7 +170,7 @@ object UnusedCode {
           ()
         }.isDefined =>
       ()
-    case Defn.Def(
+    case Defn.Def.Initial(
           _,
           Term.Name("main"),
           Nil,
@@ -180,7 +180,7 @@ object UnusedCode {
                 _,
                 _,
                 Some(
-                  Type.Apply(
+                  Type.Apply.Initial(
                     Type.Name("Array") | Type.Select(Term.Name("scala"), Type.Name("Array")) |
                     Type.Select(Term.Select(Term.Name("_root_"), Term.Name("scala")), Type.Name("Array")),
                     List(
