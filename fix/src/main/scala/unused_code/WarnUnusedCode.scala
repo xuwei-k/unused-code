@@ -37,5 +37,5 @@ class WarnUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("Wa
 
 final case class UnusedClassWarning(override val position: Position) extends Diagnostic {
   override def message = "maybe unused"
-  override def severity = LintSeverity.Warning
+  override def severity: LintSeverity = LintSeverity.Warning
 }
