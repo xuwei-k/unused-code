@@ -15,7 +15,7 @@ jobs:
         include:
         - java: 8
           os: ubuntu-latest
-        - java: 17
+        - java: 21
           os: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
