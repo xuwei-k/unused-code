@@ -8,7 +8,7 @@ TaskKey[Unit]("check") := {
 }
 
 val commonSettings = Def.settings(
-  scalaVersion := "3.1.1",
+  scalaVersion := "3.3.1",
 )
 
 commonSettings
