@@ -83,7 +83,7 @@ object UnusedCodePlugin extends AutoPlugin {
     val buildSbt =
       s"""|name := "tmp-unused-code"
           |logLevel := Level.Warn
-          |scalaVersion := "2.13.12"
+          |scalaVersion := "2.13.13"
           |libraryDependencies ++= Seq(
           |  "com.github.xuwei-k" %% "unused-code-scalafix" % "${UnusedCodeBuildInfo.version}"
           |)

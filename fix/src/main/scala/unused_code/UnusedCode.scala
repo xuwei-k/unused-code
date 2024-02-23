@@ -1,5 +1,7 @@
 package unused_code
 
+import scala.meta.XtensionCollectionLikeUI
+import scala.meta.XtensionClassifiable
 import metaconfig.generic.Surface
 import metaconfig.Conf
 import metaconfig.ConfDecoder
