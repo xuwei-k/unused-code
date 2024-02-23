@@ -1,5 +1,6 @@
 package unused_code
 
+import scalafix.v1.XtensionSeqPatch
 import metaconfig.Configured
 import scalafix.Patch
 import scalafix.v1.Configuration
@@ -8,6 +9,8 @@ import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
 import java.io.File
 import java.nio.file.Paths
+import scala.meta.XtensionCollectionLikeUI
+import scala.meta.XtensionClassifiable
 import scala.meta.inputs.Input
 import scala.meta.Defn
 import scala.meta.Pkg

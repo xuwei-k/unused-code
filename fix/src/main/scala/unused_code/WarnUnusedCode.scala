@@ -1,5 +1,7 @@
 package unused_code
 
+import scalafix.v1.XtensionSeqPatch
+import scala.meta.XtensionCollectionLikeUI
 import metaconfig.Configured
 import scalafix.Patch
 import scalafix.v1.Configuration
