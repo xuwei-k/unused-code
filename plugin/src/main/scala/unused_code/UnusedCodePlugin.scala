@@ -18,6 +18,8 @@ object UnusedCodePlugin extends AutoPlugin {
   }
   import autoImport.*
 
+  private val unusedCodeDialect = taskKey[Dialect]("").withRank(KeyRanks.Invisible)
+
   private[this] implicit val instance: JsonFormat[UnusedCodeConfig] = {
     import sjsonnew.BasicJsonProtocol.*
     val strFormat = implicitly[JsonFormat[String]]
@@ -121,16 +123,8 @@ object UnusedCodePlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
     unusedCode / sources := ((Compile / sources).value ** "*.scala").get,
-  )
-
-  override def buildSettings: Seq[Def.Setting[?]] = Def.settings(
-    ScalafixPlugin.autoImport.scalafixDependencies += {
-      "com.github.xuwei-k" %% "unused-code-scalafix" % UnusedCodeBuildInfo.version
-    },
-    unusedCode / forkOptions := ForkOptions(),
-    unusedCodeConfig := Def.taskDyn {
-      val s = state.value
-      val dialect = (LocalRootProject / scalaBinaryVersion).value match {
+    unusedCodeDialect := {
+      scalaBinaryVersion.value match {
         case "2.10" =>
           Dialect.Scala210
         case "2.11" =>
@@ -152,6 +146,16 @@ object UnusedCodePlugin extends AutoPlugin {
         case _ =>
           Dialect.Scala213Source3
       }
+    },
+  )
+
+  override def buildSettings: Seq[Def.Setting[?]] = Def.settings(
+    ScalafixPlugin.autoImport.scalafixDependencies += {
+      "com.github.xuwei-k" %% "unused-code-scalafix" % UnusedCodeBuildInfo.version
+    },
+    unusedCode / forkOptions := ForkOptions(),
+    unusedCodeConfig := Def.taskDyn {
+      val s = state.value
       val extracted = Project.extract(s)
       val currentBuildUri = extracted.currentRef.build
       val projects = extracted.structure.units
@@ -166,8 +170,15 @@ object UnusedCodePlugin extends AutoPlugin {
       val sourcesTask: Def.Initialize[Task[Seq[File]]] = projects.map { p =>
         LocalProject(p.id) / unusedCode / sources
       }.join.map(_.flatten)
+      val allDialects: Def.Initialize[Task[Seq[Dialect]]] = projects.map { p =>
+        LocalProject(p.id) / unusedCodeDialect
+      }.join
 
-      sourcesTask.map { files =>
+      val log = streams.value.log
+
+      Def.task {
+        val files = sourcesTask.value
+        val dialects = allDialects.value
         UnusedCodeConfig(
           files = files.map { f =>
             IO.relativize(baseDir, f).getOrElse(sys.error("invalid file " + f.getCanonicalFile))
@@ -182,7 +193,14 @@ object UnusedCodePlugin extends AutoPlugin {
           ),
           excludeGitLastCommit = Some(60.days),
           excludeMainMethod = true,
-          dialect = dialect,
+          dialect = {
+            if (dialects.nonEmpty) {
+              dialects.max
+            } else {
+              log.warn("not found dialect setting")
+              Dialect.Scala3
+            }
+          },
           excludeMethodRegex = Set(
             "apply",
             "unapply",

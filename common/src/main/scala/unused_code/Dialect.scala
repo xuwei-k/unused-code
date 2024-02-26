@@ -18,11 +18,13 @@ object Dialect {
     Scala210,
     Scala211,
     Scala212,
-    Scala213,
     Scala212Source3,
+    Scala213,
     Scala213Source3,
     Scala3,
   )
 
   val map: Map[String, Dialect] = all.map(a => a.value -> a).toMap
+
+  implicit val ordering: Ordering[Dialect] = Ordering.by(all.indexOf)
 }
