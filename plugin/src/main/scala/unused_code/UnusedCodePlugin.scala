@@ -130,13 +130,13 @@ object UnusedCodePlugin extends AutoPlugin {
         case "2.11" =>
           Dialect.Scala211
         case "2.12" =>
-          if (scalacOptions.value.contains("-Xsource:3")) {
+          if (scalacOptions.value.exists(_ startsWith "-Xsource:3")) {
             Dialect.Scala212Source3
           } else {
             Dialect.Scala212
           }
         case "2.13" =>
-          if (scalacOptions.value.contains("-Xsource:3")) {
+          if (scalacOptions.value.exists(_ startsWith "-Xsource:3")) {
             Dialect.Scala213Source3
           } else {
             Dialect.Scala213
