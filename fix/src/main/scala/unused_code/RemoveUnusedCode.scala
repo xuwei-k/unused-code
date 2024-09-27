@@ -32,7 +32,7 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
   }
 
   private[this] def isTopLevel(t: Tree) = {
-    t.parent.exists(_.is[Pkg]) || t.parent.exists(_.is[Source])
+    t.parent.exists(_.is[Pkg.Body]) || t.parent.exists(_.is[Source])
   }
 
   override def fix(implicit doc: SyntacticDocument): Patch = {
