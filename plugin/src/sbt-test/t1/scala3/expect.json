@@ -15,6 +15,10 @@
     {
       "value": "update",
       "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "EnumCaseB",
+      "path": "a1/Hello.scala"
     }
   ]
 }
