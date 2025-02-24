@@ -39,10 +39,21 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
     val removeAll = doc.tree.collect { case src: Source =>
       src
     }.exists { src =>
+      // https://github.com/scala/scala3/blob/93af7b8c7dde6b5a4c29/compiler/src/dotty/tools/dotc/parsing/Parsers.scala#L4601-L4605
+      // https://github.com/scala/scala3/blob/93af7b8c7dde6b5a4c29/compiler/src/dotty/tools/dotc/parsing/Parsers.scala#L254-L258
+      // https://github.com/scala/scala3/blob/93af7b8c7dde6b5a4c29/compiler/src/dotty/tools/dotc/parsing/Tokens.scala#L244-L248
       val topLevelValues = src.collect {
-        case t: Defn.Trait if isTopLevel(t) => t
         case t: Defn.Class if isTopLevel(t) => t
+        case t: Defn.Def if isTopLevel(t) => t
+        case t: Defn.Enum if isTopLevel(t) => t
+        case t: Defn.ExtensionGroup if isTopLevel(t) => t
+        case t: Defn.Given if isTopLevel(t) => t
+        case t: Defn.GivenAlias if isTopLevel(t) => t
         case t: Defn.Object if isTopLevel(t) => t
+        case t: Defn.Trait if isTopLevel(t) => t
+        case t: Defn.Type if isTopLevel(t) => t
+        case t: Defn.Val if isTopLevel(t) => t
+        case t: Defn.Var if isTopLevel(t) => t
         case t: Pkg.Object if isTopLevel(t) => t
       }
       val removeTrees = src.collect(UnusedCode.extractDefineValue).collect {
