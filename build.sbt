@@ -76,13 +76,15 @@ publish / skip := true
 lazy val plugin = project
   .in(file("plugin"))
   .enablePlugins(ScriptedPlugin)
-  .dependsOn(LocalProject("common2_12"), LocalProject("fix2_12") % Test)
+  .dependsOn(LocalProject("common3"))
   .settings(
     commonSettings,
     description := "find unused code sbt plugin",
     scalapropsSettings,
     scalapropsVersion := "0.10.0",
-    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % _root_.scalafix.sbt.BuildInfo.scalafixVersion),
+    scalaVersion := "3.7.2",
+    sbtVersion := "2.0.0-RC3",
+    addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.3+19-72d24e0d-SNAPSHOT"),
     scriptedLaunchOpts += "-Dplugin.version=" + version.value,
     scriptedBufferLog := false,
     sbtPlugin := true,
@@ -115,7 +117,7 @@ lazy val common = projectMatrix
     description := "unused-code common sources",
   )
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(Seq(Scala212, Scala213))
+  .jvmPlatform(Seq(Scala212, Scala213, "3.7.2"))
 
 lazy val fix = projectMatrix
   .in(file("fix"))
