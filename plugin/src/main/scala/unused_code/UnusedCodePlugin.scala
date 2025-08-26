@@ -122,7 +122,7 @@ object UnusedCodePlugin extends AutoPlugin {
   override def requires: Plugins = JvmPlugin && ScalafixPlugin
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
-    unusedCode / sources := ((Compile / sources).value ** "*.scala").get,
+    unusedCode / sources := ((Compile / sources).value ** "*.scala").get(),
     unusedCodeDialect := {
       scalaBinaryVersion.value match {
         case "2.10" =>
