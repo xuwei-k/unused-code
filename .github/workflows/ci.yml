@@ -15,7 +15,7 @@ jobs:
         include:
         - java: 8
           os: ubuntu-latest
-        - java: 21
+        - java: 25
           os: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
@@ -23,7 +23,7 @@ jobs:
     - uses: actions/setup-java@v5
       with:
         java-version: ${{ matrix.java }}
-        distribution: temurin
+        distribution: zulu
     - uses: coursier/cache-action@v6
     - run: sbt scalafmtSbtCheck scalafmtCheckAll scalafixAll test publishLocal scripted
     - run: rm -rf "$HOME/.ivy2/local" || true
