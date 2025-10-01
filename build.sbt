@@ -4,7 +4,7 @@ def Scala212 = "2.12.20"
 def Scala213 = "2.13.17"
 
 val commonSettings = Def.settings(
-  publishTo := sonatypePublishToBundle.value,
+  publishTo := (if (isSnapshot.value) None else localStaging.value),
   libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.19" % Test,
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / packageSrc / mappings ++= (Compile / managedSources).value.map { f =>
@@ -63,7 +63,7 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   releaseStepCommandAndRemaining("publishSigned"),
-  releaseStepCommandAndRemaining("sonatypeBundleRelease"),
+  releaseStepCommandAndRemaining("sonaRelease"),
   setNextVersion,
   commitNextVersion,
   pushChanges
