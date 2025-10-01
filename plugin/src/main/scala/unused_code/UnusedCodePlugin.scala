@@ -13,11 +13,14 @@ import scala.concurrent.duration.*
 
 object UnusedCodePlugin extends AutoPlugin {
   object autoImport {
+    @transient
     val unusedCode = taskKey[Unit]("analyze code and output intermediate file")
+    @transient
     val unusedCodeConfig = taskKey[UnusedCodeConfig]("config for UnusedCode")
   }
   import autoImport.*
 
+  @transient
   private val unusedCodeDialect = taskKey[Dialect]("").withRank(KeyRanks.Invisible)
 
   private[this] implicit val instance: JsonFormat[UnusedCodeConfig] = {
