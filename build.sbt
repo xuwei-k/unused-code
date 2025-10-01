@@ -24,12 +24,17 @@ val commonSettings = Def.settings(
     }
   },
   scalacOptions ++= {
-    if (scalaBinaryVersion.value == "3") {
-      Nil
-    } else {
-      Seq(
-        "-Xsource:3",
-      )
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
+      case "2.13" =>
+        Seq(
+          "-Xsource:3-cross",
+        )
+      case "2.12" =>
+        Seq(
+          "-Xsource:3",
+        )
     }
   },
   scalacOptions ++= Seq(
