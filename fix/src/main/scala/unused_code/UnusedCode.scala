@@ -37,12 +37,15 @@ object UnusedCode {
     }
     implicit val dialectDecoder: ConfDecoder[unused_code.Dialect] =
       implicitly[ConfDecoder[String]].map(unused_code.Dialect.map)
+    implicit val localDateDecoder: ConfDecoder[java.time.LocalDate] =
+      implicitly[ConfDecoder[String]].map(java.time.LocalDate.parse)
     val empty = UnusedCodeConfig(
       files = Nil,
       scalafixConfigPath = None,
       excludeNameRegex = Set.empty,
       excludePath = Set.empty,
       excludeGitLastCommit = None,
+      excludeGitLastDate = None,
       excludeMainMethod = true,
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,

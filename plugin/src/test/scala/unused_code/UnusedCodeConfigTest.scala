@@ -24,7 +24,14 @@ object UnusedCodeConfigTest extends Scalaprops {
       } yield Duration(s"${a}.${b}")
       Gen.elements(x, xs *)
     }
-    Gen.from9(UnusedCodeConfig.apply)
+    implicit val localDate: Gen[java.time.LocalDate] = {
+      for {
+        y <- Gen.choose(1900, 2100)
+        m <- Gen.choose(1, 12)
+        d <- Gen.choose(1, 28)
+      } yield java.time.LocalDate.of(y, m, d)
+    }
+    Gen.from10(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>
