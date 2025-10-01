@@ -15,14 +15,14 @@ object UnusedCodeConfigTest extends Scalaprops {
     implicit val s: Gen[String] = Gen.alphaNumString
     implicit val dialect: Gen[Dialect] = {
       val x +: xs = Dialect.all
-      Gen.elements(x, xs *)
+      Gen.elements(x, xs*)
     }
     implicit val duration: Gen[Duration] = {
       val x +: xs = for {
         a <- 1 to 1000
         b <- Seq("days", "hours", "seconds", "millis")
       } yield Duration(s"${a}.${b}")
-      Gen.elements(x, xs *)
+      Gen.elements(x, xs*)
     }
     Gen.from9(UnusedCodeConfig.apply)
   }
