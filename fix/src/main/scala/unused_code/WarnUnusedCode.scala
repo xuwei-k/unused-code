@@ -30,7 +30,7 @@ class WarnUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("Wa
     doc.tree
       .collect(UnusedCode.extractDefineValue)
       .collect {
-        case (tree, _, name) if unusedNames.contains(name) =>
+        case (tree, _, name) if unusedNames.contains(name) && !CheckUnusedAnnotation.exists(tree) =>
           Patch.lint(UnusedClassWarning(tree.pos))
       }
       .asPatch

@@ -1,9 +1,13 @@
 import sjsonnew.support.scalajson.unsafe.Parser.parseFromFile
 import scala.util.Success
 
-lazy val a1 = project
-lazy val a2 = project
-lazy val a3 = project.disablePlugins(ScalafixPlugin)
+val commonSettings = Def.settings(
+  scalaVersion := "2.13.17",
+)
+
+lazy val a1 = project.settings(commonSettings)
+lazy val a2 = project.settings(commonSettings)
+lazy val a3 = project.settings(commonSettings).disablePlugins(ScalafixPlugin)
 
 TaskKey[Unit]("check") := {
   val Success(x1) = parseFromFile(file("expect.json"))
