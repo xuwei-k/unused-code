@@ -66,7 +66,7 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
       doc.tree
         .collect(UnusedCode.extractDefineValue)
         .collect {
-          case (tree, _, name) if unusedNames.contains(name) =>
+          case (tree, _, name) if unusedNames.contains(name) && !CheckUnusedAnnotation.exists(tree) =>
             Patch.removeTokens(tree.tokens)
         }
         .asPatch
