@@ -2,6 +2,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 def Scala212 = "2.12.20"
 def Scala213 = "2.13.17"
+def Scala3 = "3.7.3"
 
 val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value),
@@ -78,12 +79,30 @@ commonSettings
 
 publish / skip := true
 
-lazy val plugin = project
+lazy val plugin = projectMatrix
   .in(file("plugin"))
+  .defaultAxes(VirtualAxis.jvm)
+  .jvmPlatform(Seq(Scala212, Scala3))
   .enablePlugins(ScriptedPlugin)
-  .dependsOn(LocalProject("common2_12"), LocalProject("fix2_12") % Test)
+  .dependsOn(common)
+  .configure(p =>
+    p.id match {
+      case "plugin2_12" =>
+        p.dependsOn(fix.jvm(Scala212) % Test)
+      case _ =>
+        p
+    }
+  )
   .settings(
     commonSettings,
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "2.12" =>
+          sbtVersion.value
+        case _ =>
+          "2.0.0-RC6"
+      }
+    },
     description := "find unused code sbt plugin",
     scalapropsSettings,
     scalapropsVersion := "0.10.0",
@@ -120,7 +139,7 @@ lazy val common = projectMatrix
     description := "unused-code common sources",
   )
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(Seq(Scala212, Scala213))
+  .jvmPlatform(Seq(Scala212, Scala213, Scala3))
 
 lazy val fix = projectMatrix
   .in(file("fix"))
