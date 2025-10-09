@@ -10,6 +10,7 @@ import sjsonnew.Unbuilder
 import sjsonnew.support.scalajson.unsafe.CompactPrinter
 import scalafix.sbt.ScalafixPlugin
 import scala.concurrent.duration.*
+import unused_code.UnusedCodePluginCompat.*
 
 object UnusedCodePlugin extends AutoPlugin {
   object autoImport {
@@ -38,7 +39,7 @@ object UnusedCodePlugin extends AutoPlugin {
     implicit val dialectInstance: JsonFormat[Dialect] =
       from(strFormat)(Dialect.map, _.value)
 
-    caseClass9(UnusedCodeConfig.apply, UnusedCodeConfig.unapply)(
+    caseClass9(UnusedCodeConfig.apply, (_: UnusedCodeConfig).asTupleOption)(
       "files",
       "scalafixConfigPath",
       "excludeNameRegex",
@@ -156,7 +157,7 @@ object UnusedCodePlugin extends AutoPlugin {
     ScalafixPlugin.autoImport.scalafixDependencies += {
       "com.github.xuwei-k" %% "unused-code-scalafix" % UnusedCodeBuildInfo.version
     },
-    unusedCode / forkOptions := ForkOptions(),
+    unusedCode / forkOptions := Def.uncached(ForkOptions()),
     unusedCodeConfig := Def.taskDyn {
       val s = state.value
       val extracted = Project.extract(s)
