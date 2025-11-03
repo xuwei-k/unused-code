@@ -24,6 +24,6 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
         distribution: zulu
-    - uses: coursier/cache-action@v6
+    - uses: coursier/cache-action@v7
     - run: sbt scalafmtSbtCheck scalafmtCheckAll scalafixAll test publishLocal scripted
     - run: rm -rf "$HOME/.ivy2/local" || true
