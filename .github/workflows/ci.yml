@@ -18,7 +18,7 @@ jobs:
         - java: 25
           os: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - uses: sbt/setup-sbt@v1
     - uses: actions/setup-java@v5
       with:
