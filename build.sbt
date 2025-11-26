@@ -97,7 +97,7 @@ lazy val plugin = projectMatrix
         case "2.12" =>
           sbtVersion.value
         case _ =>
-          "2.0.0-RC6"
+          "2.0.0-RC7"
       }
     },
     description := "find unused code sbt plugin",
