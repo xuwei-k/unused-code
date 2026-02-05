@@ -2,7 +2,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 def Scala212 = "2.12.21"
 def Scala213 = "2.13.18"
-def Scala3 = "3.7.4"
+def Scala3 = "3.8.1"
 
 val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value),
