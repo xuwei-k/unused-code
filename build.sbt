@@ -2,7 +2,7 @@ import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 def Scala212 = "2.12.21"
 def Scala213 = "2.13.18"
-def Scala3 = "3.7.4"
+def Scala3 = "3.8.1"
 
 val commonSettings = Def.settings(
   publishTo := (if (isSnapshot.value) None else localStaging.value),
@@ -19,6 +19,16 @@ val commonSettings = Def.settings(
       )
     } else {
       Nil
+    }
+  },
+  scalacOptions ++= {
+    scalaBinaryVersion.value match {
+      case "3" =>
+        Nil
+      case _ =>
+        Seq(
+          "-release:8",
+        )
     }
   },
   scalacOptions ++= {
@@ -97,7 +107,7 @@ lazy val plugin = projectMatrix
         case "2.12" =>
           sbtVersion.value
         case _ =>
-          "2.0.0-RC8"
+          "2.0.0-RC9"
       }
     },
     description := "find unused code sbt plugin",
