@@ -9,7 +9,7 @@ val commonSettings = Def.settings(
   libraryDependencies += "org.scalatest" %% "scalatest-funsuite" % "3.2.19" % Test,
   Compile / unmanagedResources += (LocalRootProject / baseDirectory).value / "LICENSE.txt",
   Compile / doc / scalacOptions ++= {
-    val hash = sys.process.Process("git rev-parse HEAD").lineStream_!.head
+    val hash = sys.process.Process("git rev-parse HEAD").lazyLines_!.head
     if (scalaBinaryVersion.value != "3") {
       Seq(
         "-sourcepath",
@@ -68,23 +68,25 @@ val commonSettings = Def.settings(
   ),
 )
 
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  releaseStepCommandAndRemaining("publishSigned"),
-  releaseStepCommandAndRemaining("sonaRelease"),
-  setNextVersion,
-  commitNextVersion,
-  pushChanges
-)
-
-commonSettings
-
-publish / skip := true
+lazy val root = rootProject
+  .autoAggregate
+  .settings(
+    commonSettings,
+    publish / skip := true,
+    releaseProcess := Seq[ReleaseStep](
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepCommandAndRemaining("publishSigned"),
+      releaseStepCommandAndRemaining("sonaRelease"),
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    ),
+  )
 
 lazy val plugin = projectMatrix
   .in(file("plugin"))
@@ -105,9 +107,9 @@ lazy val plugin = projectMatrix
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
         case "2.12" =>
-          sbtVersion.value
+          "1.12.3"
         case _ =>
-          "2.0.0-RC9"
+          sbtVersion.value
       }
     },
     description := "find unused code sbt plugin",
