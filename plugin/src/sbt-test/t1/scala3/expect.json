@@ -17,6 +17,10 @@
       "path": "a1/DefaultExcludeMethodsTest2.scala"
     },
     {
+      "value": "y2",
+      "path": "a1/ExtensionTest.scala"
+    },
+    {
       "value": "EnumCaseB",
       "path": "a1/Hello.scala"
     }

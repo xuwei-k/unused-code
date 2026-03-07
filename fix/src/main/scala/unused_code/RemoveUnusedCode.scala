@@ -9,13 +9,14 @@ import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
 import java.io.File
 import java.nio.file.Paths
-import scala.meta.XtensionCollectionLikeUI
-import scala.meta.XtensionClassifiable
-import scala.meta.inputs.Input
 import scala.meta.Defn
 import scala.meta.Pkg
 import scala.meta.Source
+import scala.meta.Term
 import scala.meta.Tree
+import scala.meta.XtensionClassifiable
+import scala.meta.XtensionCollectionLikeUI
+import scala.meta.inputs.Input
 
 class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("RemoveUnusedCode") {
 
@@ -67,7 +68,20 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
         .collect(UnusedCode.extractDefineValue)
         .collect {
           case (tree, _, name) if unusedNames.contains(name) && !CheckUnusedAnnotation.exists(tree) =>
-            Patch.removeTokens(tree.tokens)
+            if (tree.is[Defn.Def]) {
+              tree.parent
+                .flatMap(_.parent)
+                .collect {
+                  case ext @ Defn.ExtensionGroup.After_4_6_0(_, Term.Block((d: Defn.Def) :: Nil))
+                      if d.name.value == name =>
+                    Patch.removeTokens(ext.tokens)
+                }
+                .getOrElse(
+                  Patch.removeTokens(tree.tokens)
+                )
+            } else {
+              Patch.removeTokens(tree.tokens)
+            }
         }
         .asPatch
     }

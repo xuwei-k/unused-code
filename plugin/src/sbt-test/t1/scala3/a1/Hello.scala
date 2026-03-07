@@ -7,6 +7,9 @@ object Hello1 {
     println(ExampleEnum1.EnumCaseA)
     println(ExampleEnum2.EnumCaseY)
     println("hello " + args.mkString(", "))
+
+    import pkg2.ExtensionTest.*
+    10.y1
   }
 }
 
