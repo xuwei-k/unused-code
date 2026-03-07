@@ -21,6 +21,10 @@
       "path": "a1/ExtensionTest.scala"
     },
     {
+      "value": "y3",
+      "path": "a1/ExtensionTest.scala"
+    },
+    {
       "value": "EnumCaseB",
       "path": "a1/Hello.scala"
     }

@@ -76,6 +76,12 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
                       if d.name.value == name =>
                     Patch.removeTokens(ext.tokens)
                 }
+                .orElse(
+                  tree.parent.collect {
+                    case ext @ Defn.ExtensionGroup.After_4_6_0(_, d: Defn.Def) if d.name.value == name =>
+                      Patch.removeTokens(ext.tokens)
+                  }
+                )
                 .getOrElse(
                   Patch.removeTokens(tree.tokens)
                 )
