@@ -1,9 +1,9 @@
 package unused_code
 
-import scala.meta.Stat.WithMods
 import scala.meta.Init
 import scala.meta.Mod
 import scala.meta.Name
+import scala.meta.Stat.WithMods
 import scala.meta.Term
 import scala.meta.Tree
 import scala.meta.Type

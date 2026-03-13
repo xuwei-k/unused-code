@@ -4,12 +4,12 @@ import java.nio.charset.StandardCharsets
 import sbt.*
 import sbt.Keys.*
 import sbt.plugins.JvmPlugin
+import scala.concurrent.duration.*
+import scalafix.sbt.ScalafixPlugin
 import sjsonnew.Builder
 import sjsonnew.JsonFormat
 import sjsonnew.Unbuilder
 import sjsonnew.support.scalajson.unsafe.CompactPrinter
-import scalafix.sbt.ScalafixPlugin
-import scala.concurrent.duration.*
 import unused_code.UnusedCodePluginCompat.*
 
 object UnusedCodePlugin extends AutoPlugin {
