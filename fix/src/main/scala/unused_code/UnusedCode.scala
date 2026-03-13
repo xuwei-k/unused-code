@@ -73,13 +73,54 @@ object UnusedCode {
         .getOrElse(sys.error("missing --input"))
     }
     val conf = jsonFileToConfig(new File(in))
+    val config = getScalafixConfig(conf)
     val result = conf.files.flatMap { file =>
       val input = Input.File(new File(conf.baseDir, file))
-      val dialect = convertDialect.getOrElse(conf.dialect, scala.meta.dialects.Scala213)
+      val dialect = applyDialectOverride(
+        config.dialectOverride,
+        convertDialect.getOrElse(conf.dialect, scala.meta.dialects.Scala213)
+      )
       val tree = implicitly[Parse[Source]].apply(input, dialect).get
       run(tree, file, conf)
     }
     writeResult(result, conf)
+  }
+
+  private def getScalafixConfig(conf: UnusedCodeConfig): UnusedCodeScalafixConfig = {
+    val scalafixConfig = new File(conf.baseDir, conf.scalafixConfigPath.getOrElse(defaultScalafixConfigFile))
+    if (scalafixConfig.isFile) {
+      Conf.parseFile(scalafixConfig)(Hocon).get.as[UnusedCodeScalafixConfig].get
+    } else {
+      UnusedCodeScalafixConfig.default
+    }
+  }
+
+  /**
+   * [[https://github.com/scalacenter/scalafix/commit/2529c4d42ef25511c6576d17c1cc287a5515d9d2]]
+   */
+  private def applyDialectOverride(
+    dialectOverride: Map[String, Boolean],
+    dialect: scala.meta.Dialect
+  ): scala.meta.Dialect = {
+    dialectOverride.foldLeft(dialect) {
+      case (cur, (k, v)) if k.nonEmpty =>
+        val upper = s"${k.head.toUpper}${k.drop(1)}"
+        cur.getClass.getMethods
+          .find(method =>
+            (
+              method.getName == s"with${upper}"
+            ) && (
+              method.getParameterTypes.toSeq == Seq(classOf[Boolean])
+            ) && (
+              method.getReturnType == classOf[scala.meta.Dialect]
+            )
+          )
+          .fold(cur)(
+            _.invoke(cur, java.lang.Boolean.valueOf(v)).asInstanceOf[scala.meta.Dialect]
+          )
+      case (cur, _) =>
+        cur
+    }
   }
 
   private[unused_code] val extractDefineValue: PartialFunction[Tree, (Tree, List[Mod], String)] = {
@@ -151,17 +192,7 @@ object UnusedCode {
     val result = FindResults(aggregate(values = values, config = config))
     val json = implicitly[ConfEncoder[FindResults]].write(result).show
     val bytes = json.getBytes(StandardCharsets.UTF_8)
-    val path = {
-      val scalafixConfig = new File(config.baseDir, config.scalafixConfigPath.getOrElse(defaultScalafixConfigFile))
-      val p = {
-        if (scalafixConfig.isFile) {
-          Conf.parseFile(scalafixConfig)(Hocon).get.as[UnusedCodeScalafixConfig].get.outputPath
-        } else {
-          UnusedCodeScalafixConfig.default.outputPath
-        }
-      }
-      new File(config.baseDir, p).toPath
-    }
+    val path = new File(config.baseDir, getScalafixConfig(config).outputPath).toPath
     Files.createDirectories(path.getParent)
     Files.write(path, bytes)
     json

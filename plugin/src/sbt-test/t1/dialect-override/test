@@ -1,0 +1,8 @@
+> compile
+> show unusedCodeConfig
+-> show unusedCode
+> updateScalafixConfigDialectOverrride
+> show unusedCode
+> scalafixAll WarnUnusedCode
+> scalafixAll RemoveUnusedCode
+> checkScalaFile
