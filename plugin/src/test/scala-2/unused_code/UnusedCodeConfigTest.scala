@@ -1,13 +1,13 @@
 package unused_code
 
+import UnusedCodePlugin.*
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import org.scalatest.Assertions.*
+import scala.concurrent.duration.Duration
 import scalaprops.Gen
 import scalaprops.Property
 import scalaprops.Scalaprops
-import UnusedCodePlugin.*
-import org.scalatest.Assertions.*
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import scala.concurrent.duration.Duration
 
 object UnusedCodeConfigTest extends Scalaprops {
 

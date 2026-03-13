@@ -1,8 +1,8 @@
 package unused_code
 
 import org.scalatest.funsuite.AnyFunSuite
-import scala.meta.inputs.Input
 import scala.meta.Stat
+import scala.meta.inputs.Input
 import scala.meta.parsers.Parse
 
 class UnusedCodeTest extends AnyFunSuite {

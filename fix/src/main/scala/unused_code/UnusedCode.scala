@@ -1,15 +1,16 @@
 package unused_code
 
-import scala.meta.XtensionCollectionLikeUI
-import scala.meta.XtensionClassifiable
-import metaconfig.generic.Surface
+import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Paths
 import metaconfig.Conf
 import metaconfig.ConfDecoder
 import metaconfig.ConfEncoder
 import metaconfig.Hocon
-import java.io.File
-import java.nio.charset.StandardCharsets
-import scala.sys.process.Process
+import metaconfig.generic.Surface
+import scala.annotation.nowarn
+import scala.concurrent.duration.*
 import scala.meta.Defn
 import scala.meta.Mod
 import scala.meta.Pat
@@ -18,12 +19,11 @@ import scala.meta.Source
 import scala.meta.Term
 import scala.meta.Tree
 import scala.meta.Type
-import java.nio.file.Files
-import java.nio.file.Paths
-import scala.annotation.nowarn
-import scala.concurrent.duration.*
+import scala.meta.XtensionClassifiable
+import scala.meta.XtensionCollectionLikeUI
 import scala.meta.inputs.Input
 import scala.meta.parsers.Parse
+import scala.sys.process.Process
 
 object UnusedCode {
   private[this] implicit val surface: Surface[UnusedCodeConfig] =

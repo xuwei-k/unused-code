@@ -1,12 +1,12 @@
 package unused_code
 
-import metaconfig.generic.Surface
+import java.nio.file.Files
+import java.nio.file.Path
 import metaconfig.Conf
 import metaconfig.ConfDecoder
 import metaconfig.ConfEncoder
 import metaconfig.Hocon
-import java.nio.file.Files
-import java.nio.file.Path
+import metaconfig.generic.Surface
 
 final case class FindResults(values: List[FindResult.Use])
 

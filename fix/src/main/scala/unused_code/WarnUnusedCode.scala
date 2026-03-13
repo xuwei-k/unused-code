@@ -1,17 +1,17 @@
 package unused_code
 
-import scalafix.v1.XtensionSeqPatch
-import scala.meta.XtensionCollectionLikeUI
+import java.nio.file.Paths
 import metaconfig.Configured
+import scala.meta.Position
+import scala.meta.XtensionCollectionLikeUI
+import scalafix.Diagnostic
 import scalafix.Patch
+import scalafix.lint.LintSeverity
 import scalafix.v1.Configuration
 import scalafix.v1.Rule
 import scalafix.v1.SyntacticDocument
 import scalafix.v1.SyntacticRule
-import scala.meta.Position
-import scalafix.Diagnostic
-import scalafix.lint.LintSeverity
-import java.nio.file.Paths
+import scalafix.v1.XtensionSeqPatch
 
 class WarnUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("WarnUnusedCode") {
   def this() = this(UnusedCodeScalafixConfig.default)

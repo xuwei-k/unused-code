@@ -1,8 +1,8 @@
 package unused_code
 
-import metaconfig.generic.Surface
 import metaconfig.ConfDecoder
 import metaconfig.ConfEncoder
+import metaconfig.generic.Surface
 
 sealed abstract class FindResult extends Product with Serializable
 

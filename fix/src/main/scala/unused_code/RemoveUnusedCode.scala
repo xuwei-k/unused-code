@@ -1,14 +1,8 @@
 package unused_code
 
-import scalafix.v1.XtensionSeqPatch
-import metaconfig.Configured
-import scalafix.Patch
-import scalafix.v1.Configuration
-import scalafix.v1.Rule
-import scalafix.v1.SyntacticDocument
-import scalafix.v1.SyntacticRule
 import java.io.File
 import java.nio.file.Paths
+import metaconfig.Configured
 import scala.meta.Defn
 import scala.meta.Pkg
 import scala.meta.Source
@@ -17,6 +11,12 @@ import scala.meta.Tree
 import scala.meta.XtensionClassifiable
 import scala.meta.XtensionCollectionLikeUI
 import scala.meta.inputs.Input
+import scalafix.Patch
+import scalafix.v1.Configuration
+import scalafix.v1.Rule
+import scalafix.v1.SyntacticDocument
+import scalafix.v1.SyntacticRule
+import scalafix.v1.XtensionSeqPatch
 
 class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("RemoveUnusedCode") {
 
