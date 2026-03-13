@@ -12,6 +12,7 @@ import metaconfig.generic.Surface
 import scala.annotation.nowarn
 import scala.concurrent.duration.*
 import scala.meta.Defn
+import scala.meta.Member
 import scala.meta.Mod
 import scala.meta.Pat
 import scala.meta.Pkg
@@ -140,7 +141,7 @@ object UnusedCode {
       (x, x.mods, x.name.value)
     case x @ Defn.Val(_, List(Pat.Var(name)), _, _) =>
       (x, x.mods, name.value)
-    case x @ Defn.Var.Initial(_, List(Pat.Var(name)), _, _) =>
+    case x @ Defn.Var.After_4_7_2(_, List(Pat.Var(name)), _, _) =>
       (x, x.mods, name.value)
   }
 
@@ -203,26 +204,35 @@ object UnusedCode {
           ()
         }.isDefined =>
       ()
-    case Defn.Def.Initial(
+    case Defn.Def.After_4_7_3(
           _,
           Term.Name("main"),
-          Nil,
           List(
-            List(
-              Term.Param(
-                _,
-                _,
-                Some(
-                  Type.Apply.Initial(
-                    Type.Name("Array") | Type.Select(Term.Name("scala"), Type.Name("Array")) |
-                    Type.Select(Term.Select(Term.Name("_root_"), Term.Name("scala")), Type.Name("Array")),
-                    List(
-                      Type.Name("String") | Type.Select(Term.Name("Predef"), Type.Name("String")) |
-                      Type.Select(Term.Select(Term.Name("java"), Term.Name("lang")), Type.Name("String")),
+            Member.ParamClauseGroup(
+              Type.ParamClause(Nil),
+              List(
+                Term.ParamClause(
+                  List(
+                    Term.Param(
+                      _,
+                      _,
+                      Some(
+                        Type.Apply.After_4_6_0(
+                          Type.Name("Array") | Type.Select(Term.Name("scala"), Type.Name("Array")) |
+                          Type.Select(Term.Select(Term.Name("_root_"), Term.Name("scala")), Type.Name("Array")),
+                          Type.ArgClause(
+                            List(
+                              Type.Name("String") | Type.Select(Term.Name("Predef"), Type.Name("String")) |
+                              Type.Select(Term.Select(Term.Name("java"), Term.Name("lang")), Type.Name("String")),
+                            )
+                          )
+                        )
+                      ),
+                      _
                     )
-                  )
-                ),
-                _
+                  ),
+                  None
+                )
               )
             )
           ),
