@@ -3,6 +3,9 @@ package unused_code
 import UnusedCodePlugin.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import org.scalatest.Assertions.*
 import scala.concurrent.duration.Duration
 import scalaprops.Gen
@@ -24,7 +27,16 @@ object UnusedCodeConfigTest extends Scalaprops {
       } yield Duration(s"${a}.${b}")
       Gen.elements(x, xs*)
     }
-    Gen.from9(UnusedCodeConfig.apply)
+    implicit val zonedDateTime: Gen[ZonedDateTime] = {
+      val zone = ZoneId.of("Asia/Tokyo")
+      Gen
+        .chooseLong(0L, (Int.MaxValue: Long) * 1000L)
+        .map(Instant.ofEpochMilli)
+        .map(
+          ZonedDateTime.ofInstant(_, zone)
+        )
+    }
+    Gen.from10(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>
