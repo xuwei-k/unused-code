@@ -12,6 +12,7 @@ import scala.concurrent.duration.*
  * @param excludePath [[https://docs.oracle.com/javase/8/docs/api/java/nio/file/FileSystem.html#getPathMatcher-java.lang.String-]]
  * @param excludeGitLastCommit skip recently added or changed sources
  * @param excludeMainMethod don't remove main methods if true
+ * @param excludeJEP512MainMethod [[https://openjdk.org/jeps/512]]
  */
 final case class UnusedCodeConfig(
   files: List[String],
@@ -21,6 +22,7 @@ final case class UnusedCodeConfig(
   excludeGitLastCommit: Option[Duration],
   excludeGitLastCommitDateTime: Option[ZonedDateTime],
   excludeMainMethod: Boolean,
+  excludeJEP512MainMethod: Boolean,
   dialect: Dialect,
   excludeMethodRegex: Set[String],
   baseDir: String,

@@ -51,6 +51,7 @@ object UnusedCode {
       excludeGitLastCommit = None,
       excludeGitLastCommitDateTime = None,
       excludeMainMethod = true,
+      excludeJEP512MainMethod = true,
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,
       baseDir = "",
@@ -227,6 +228,27 @@ object UnusedCode {
     json
   }
 
+  private[unused_code] val isJEP512MainMethod: PartialFunction[Tree, Unit] = {
+    case Defn.Def.After_4_7_3(
+          _,
+          Term.Name("main"),
+          Nil | List(
+            Member.ParamClauseGroup(
+              Type.ParamClause(Nil),
+              List(
+                Term.ParamClause(Nil, None)
+              )
+            )
+          ),
+          Some(
+            Type.Select(Term.Select(Term.Name("_root_"), Term.Name("scala")), Type.Name("Unit")) |
+            Type.Select(Term.Name("scala"), Type.Name("Unit")) | Type.Name("Unit")
+          ) | None,
+          _
+        ) =>
+      ()
+  }
+
   private[unused_code] val isMainMethod: PartialFunction[Tree, Unit] = {
     case x: Defn.Def if x.mods.collect { case a: Mod.Annot => a.init.tpe }.collectFirst { case Type.Name("main") =>
           ()
@@ -275,6 +297,9 @@ object UnusedCode {
   private[this] def hasMainMethod(tree: Tree): Boolean =
     tree.collect(isMainMethod).nonEmpty
 
+  private[this] def hasJEP512MainMethod(tree: Tree): Boolean =
+    tree.collect(isJEP512MainMethod).nonEmpty
+
   private[this] def filterMods(mods: List[Mod]): Boolean = {
     !mods.exists(m => m.is[Mod.Implicit] || m.is[Mod.Override] || m.is[Mod.Inline])
   }
@@ -284,6 +309,8 @@ object UnusedCode {
       case x: Defn.Object if filterMods(x.mods) =>
         if (config.excludeMainMethod && hasMainMethod(x)) {
           Nil
+        } else if (config.excludeJEP512MainMethod && hasJEP512MainMethod(x)) {
+          Nil
         } else {
           FindResult.Define(
             value = x.name.value,
@@ -291,6 +318,8 @@ object UnusedCode {
         }
       case x: Defn.Def if filterMods(x.mods) && !config.isExcludeMethod(x.name.value) =>
         if (config.excludeMainMethod && isMainMethod.isDefinedAt(x)) {
+          Nil
+        } else if (config.excludeJEP512MainMethod && isJEP512MainMethod.isDefinedAt(x)) {
           Nil
         } else {
           // TODO unary methods https://github.com/xuwei-k/unused-code/issues/3

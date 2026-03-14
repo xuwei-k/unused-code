@@ -35,4 +35,30 @@ class UnusedCodeTest extends AnyFunSuite {
       assert(!UnusedCode.isMainMethod.isDefinedAt(tree), str)
     }
   }
+
+  test("isJEP512MainMethod") {
+    Seq(
+      "def main = {}",
+      "def main: Unit = {}",
+      "def main() = {}",
+      "def main(): Unit = {}",
+      "protected def main() = {}",
+      "protected def main(): Unit = {}",
+    ).foreach { str =>
+      val input = Input.String(str)
+      val tree = implicitly[Parse[Stat]].apply(input, scala.meta.dialects.Scala213).get
+      assert(UnusedCode.isJEP512MainMethod.isDefinedAt(tree), str)
+    }
+
+    Seq(
+      "def test(args: Array[String]): Unit = {}",
+      "def main(args: List[String]): Unit = {}",
+      "def main(args: Array[String]): Int = {}",
+      "def main(args: Array[String]): String = {}",
+    ).foreach { str =>
+      val input = Input.String(str)
+      val tree = implicitly[Parse[Stat]].apply(input, scala.meta.dialects.Scala213).get
+      assert(!UnusedCode.isJEP512MainMethod.isDefinedAt(tree), str)
+    }
+  }
 }
