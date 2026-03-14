@@ -2,6 +2,7 @@ package unused_code
 
 import java.nio.file.FileSystems
 import java.nio.file.PathMatcher
+import java.time.ZonedDateTime
 import java.util.regex.Pattern
 import scala.concurrent.duration.*
 
@@ -18,6 +19,7 @@ final case class UnusedCodeConfig(
   excludeNameRegex: Set[String],
   excludePath: Set[String],
   excludeGitLastCommit: Option[Duration],
+  excludeGitLastCommitDateTime: Option[ZonedDateTime],
   excludeMainMethod: Boolean,
   dialect: Dialect,
   excludeMethodRegex: Set[String],

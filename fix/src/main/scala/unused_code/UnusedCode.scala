@@ -4,6 +4,9 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import metaconfig.Conf
 import metaconfig.ConfDecoder
 import metaconfig.ConfEncoder
@@ -38,12 +41,15 @@ object UnusedCode {
     }
     implicit val dialectDecoder: ConfDecoder[unused_code.Dialect] =
       implicitly[ConfDecoder[String]].map(unused_code.Dialect.map)
+    implicit val dateTimeDecoder: ConfDecoder[ZonedDateTime] =
+      implicitly[ConfDecoder[String]].map(ZonedDateTime.parse)
     val empty = UnusedCodeConfig(
       files = Nil,
       scalafixConfigPath = None,
       excludeNameRegex = Set.empty,
       excludePath = Set.empty,
       excludeGitLastCommit = None,
+      excludeGitLastCommitDateTime = None,
       excludeMainMethod = true,
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,
@@ -163,6 +169,22 @@ object UnusedCode {
     }
   }
 
+  @nowarn("msg=lineStream")
+  private[this] def lastGitCommitDateTime(base: String, path: String): ZonedDateTime = {
+    val default = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"))
+    // https://git-scm.com/docs/git-log
+    if (new File(base, ".git").isDirectory) {
+      Process(
+        command = Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:'%cd'", path),
+        cwd = Some(new File(base))
+      ).lineStream_!.headOption.map(ZonedDateTime.parse).getOrElse(default)
+    } else {
+      default
+    }
+  }
+
+  private implicit val zonedDateTimeOrdering: Ordering[ZonedDateTime] = _.compareTo(_)
+
   private[this] def aggregate(values: Seq[FindResult], config: UnusedCodeConfig): List[FindResult.Use] = {
     val allDefineNames = values.collect { case a: FindResult.Define => a.value }.toSet
     val allNames = values.collect { case a: FindResult.Use => a }
@@ -182,7 +204,13 @@ object UnusedCode {
           case Some(duration) if duration.isFinite =>
             duration < (currentMillis - lastGitCommitMilliSeconds(config.baseDir, x.path)).millis
           case _ =>
-            true
+            config.excludeGitLastCommitDateTime match {
+              case Some(dateTime) =>
+                import Ordering.Implicits.*
+                dateTime > lastGitCommitDateTime(config.baseDir, x.path)
+              case None =>
+                true
+            }
         }
       )
       .toList
