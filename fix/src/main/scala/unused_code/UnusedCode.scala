@@ -175,7 +175,7 @@ object UnusedCode {
     // https://git-scm.com/docs/git-log
     if (new File(base, ".git").isDirectory) {
       Process(
-        command = Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:'%cd'", path),
+        command = Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:%cd", path),
         cwd = Some(new File(base))
       ).lineStream_!.headOption.map(ZonedDateTime.parse).getOrElse(default)
     } else {
