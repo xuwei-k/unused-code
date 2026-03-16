@@ -6,6 +6,7 @@
 > show unusedCode
 > check
 > scalafixAll WarnUnusedCode
+-> scalafixAll ErrorUnusedCode
 > scalafixAll RemoveUnusedCode
 
 > a1/runMain hello.x1
