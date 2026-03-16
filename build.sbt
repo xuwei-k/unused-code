@@ -150,29 +150,12 @@ lazy val common = projectMatrix
 
 lazy val fix = projectMatrix
   .in(file("fix"))
+  .enablePlugins(ScalafixRuleResourceGen)
   .settings(
     commonSettings,
     name := "unused-code-scalafix",
     description := "scalafix rules unused-code",
     libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.6",
-    Compile / resourceGenerators += Def.task {
-      val rules = (Compile / compile).value
-        .asInstanceOf[sbt.internal.inc.Analysis]
-        .apis
-        .internal
-        .collect {
-          case (className, analyzed) if analyzed.api.classApi.structure.parents.collect {
-                case p: xsbti.api.Projection => p.id
-              }.exists(Set("SyntacticRule", "SemanticRule")) =>
-            className
-        }
-        .toList
-        .sorted
-      assert(rules.nonEmpty)
-      val output = (Compile / resourceManaged).value / "META-INF" / "services" / "scalafix.v1.Rule"
-      IO.writeLines(output, rules)
-      Seq(output)
-    }.taskValue,
   )
   .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(Seq(Scala212, Scala213))
