@@ -20,6 +20,7 @@ $ exec cat a3/src/main/scala/A3.scala
 $ exec cat a2/src/main/scala/B2.scala
 
 > scalafixAll WarnUnusedCode
+-> scalafixAll ErrorUnusedCode
 > scalafixAll RemoveUnusedCode
 
 -$ exists a1/src/main/scala/A1.scala

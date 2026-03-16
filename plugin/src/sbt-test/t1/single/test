@@ -3,4 +3,5 @@
 > projects
 > show unusedCode
 > scalafixAll WarnUnusedCode
+> scalafixAll ErrorUnusedCode
 > scalafixAll RemoveUnusedCode
