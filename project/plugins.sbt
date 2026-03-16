@@ -9,3 +9,5 @@ addSbtPlugin("com.github.sbt" % "sbt-release" % "1.4.0")
 addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.5.1")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.6")
+
+addSbtPlugin("com.github.xuwei-k" % "scalafix-rule-resource-gen" % "0.1.2")
