@@ -53,6 +53,7 @@ object UnusedCode {
       excludeGitLastCommitDateTime = None,
       excludeMainMethod = true,
       excludeJEP512MainMethod = true,
+      excludeEnumCase = false,
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,
       baseDir = "",
@@ -132,7 +133,12 @@ object UnusedCode {
     }
   }
 
-  private[unused_code] val extractDefineValue: PartialFunction[Tree, (Tree, List[Mod], Name)] = {
+  private[unused_code] val extractDefineValue: PartialFunction[Tree, (Tree, List[Mod], Name)] =
+    extractDefineValueWithConfig(excludeEnumCase = false)
+
+  private def extractDefineValueWithConfig(
+    excludeEnumCase: Boolean
+  ): PartialFunction[Tree, (Tree, List[Mod], Name)] = {
     case x: Defn.Trait =>
       (x, x.mods, x.name)
     case x: Defn.Class =>
@@ -145,7 +151,7 @@ object UnusedCode {
       (x, x.mods, x.name)
     case x: Defn.Enum =>
       (x, x.mods, x.name)
-    case x: Defn.EnumCase =>
+    case x: Defn.EnumCase if !excludeEnumCase =>
       (x, x.mods, x.name)
     case x @ Defn.Val(_, List(Pat.Var(name)), _, _) =>
       (x, x.mods, name)
@@ -153,8 +159,9 @@ object UnusedCode {
       (x, x.mods, name)
   }
 
-  private[this] object DefineValue {
-    def unapply(t: Tree): Option[(Tree, List[Mod], Name)] = extractDefineValue.lift.apply(t)
+  private class DefineValue(config: UnusedCodeConfig) {
+    private val function = extractDefineValueWithConfig(excludeEnumCase = config.excludeEnumCase).lift
+    def unapply(t: Tree): Option[(Tree, List[Mod], Name)] = function(t)
   }
 
   @nowarn("msg=lineStream")
@@ -306,6 +313,7 @@ object UnusedCode {
   }
 
   private[this] def run(tree: Tree, path: String, config: UnusedCodeConfig): List[FindResult] = {
+    val DefineValue = new DefineValue(config)
     tree.collect {
       case x: Defn.Object if filterMods(x.mods) =>
         if (config.excludeMainMethod && hasMainMethod(x)) {

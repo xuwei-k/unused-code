@@ -4,9 +4,15 @@
 > show baseDirectory
 
 > show unusedCode
-> check
+> check1
 > scalafixAll WarnUnusedCode
 -> scalafixAll ErrorUnusedCode
+
+> set ThisBuild / unusedCodeConfig ~= (_.copy(excludeEnumCase = true))
+> unusedCode
+> check2
+> reload
+
 > scalafixAll RemoveUnusedCode
 
 > a1/runMain hello.x1

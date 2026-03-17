@@ -1,0 +1,28 @@
+{
+  "values": [
+    {
+      "value": "apply",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "unapply",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "unapplySeq",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "update",
+      "path": "a1/DefaultExcludeMethodsTest2.scala"
+    },
+    {
+      "value": "y2",
+      "path": "a1/ExtensionTest.scala"
+    },
+    {
+      "value": "y3",
+      "path": "a1/ExtensionTest.scala"
+    }
+  ]
+}

@@ -36,7 +36,7 @@ object UnusedCodeConfigTest extends Scalaprops {
           ZonedDateTime.ofInstant(_, zone)
         )
     }
-    Gen.from11(UnusedCodeConfig.apply)
+    Gen.from12(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>

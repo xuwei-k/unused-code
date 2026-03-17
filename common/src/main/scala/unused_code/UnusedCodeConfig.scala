@@ -23,6 +23,7 @@ final case class UnusedCodeConfig(
   excludeGitLastCommitDateTime: Option[ZonedDateTime],
   excludeMainMethod: Boolean,
   excludeJEP512MainMethod: Boolean,
+  excludeEnumCase: Boolean,
   dialect: Dialect,
   excludeMethodRegex: Set[String],
   baseDir: String,
