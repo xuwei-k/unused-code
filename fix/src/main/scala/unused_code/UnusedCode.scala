@@ -17,6 +17,7 @@ import scala.concurrent.duration.*
 import scala.meta.Defn
 import scala.meta.Member
 import scala.meta.Mod
+import scala.meta.Name
 import scala.meta.Pat
 import scala.meta.Pkg
 import scala.meta.Source
@@ -131,29 +132,29 @@ object UnusedCode {
     }
   }
 
-  private[unused_code] val extractDefineValue: PartialFunction[Tree, (Tree, List[Mod], String)] = {
+  private[unused_code] val extractDefineValue: PartialFunction[Tree, (Tree, List[Mod], Name)] = {
     case x: Defn.Trait =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Defn.Class =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Defn.Object =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Pkg.Object =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Defn.Def =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Defn.Enum =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x: Defn.EnumCase =>
-      (x, x.mods, x.name.value)
+      (x, x.mods, x.name)
     case x @ Defn.Val(_, List(Pat.Var(name)), _, _) =>
-      (x, x.mods, name.value)
+      (x, x.mods, name)
     case x @ Defn.Var.After_4_7_2(_, List(Pat.Var(name)), _, _) =>
-      (x, x.mods, name.value)
+      (x, x.mods, name)
   }
 
   private[this] object DefineValue {
-    def unapply(t: Tree): Option[(Tree, List[Mod], String)] = extractDefineValue.lift.apply(t)
+    def unapply(t: Tree): Option[(Tree, List[Mod], Name)] = extractDefineValue.lift.apply(t)
   }
 
   @nowarn("msg=lineStream")
@@ -337,11 +338,11 @@ object UnusedCode {
         }
       case DefineValue(t, mods, name) if filterMods(mods) =>
         t match {
-          case _: Defn.Def if config.isExcludeMethod(name) =>
+          case _: Defn.Def if config.isExcludeMethod(name.value) =>
             Nil
           case _ =>
             FindResult.Define(
-              value = name,
+              value = name.value,
             ) :: Nil
         }
       case x: Term.Name =>
