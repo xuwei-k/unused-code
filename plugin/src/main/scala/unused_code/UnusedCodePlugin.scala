@@ -39,7 +39,7 @@ object UnusedCodePlugin extends AutoPlugin {
     implicit val dialectInstance: JsonFormat[Dialect] =
       from(strFormat)(Dialect.map, _.value)
 
-    caseClass11(UnusedCodeConfig.apply, (_: UnusedCodeConfig).asTupleOption)(
+    caseClass12(UnusedCodeConfig.apply, (_: UnusedCodeConfig).asTupleOption)(
       "files",
       "scalafixConfigPath",
       "excludeNameRegex",
@@ -48,6 +48,7 @@ object UnusedCodePlugin extends AutoPlugin {
       "excludeGitLastCommitDateTime",
       "excludeMainMethod",
       "excludeJEP512MainMethod",
+      "excludeEnumCase",
       "dialect",
       "excludeMethodRegex",
       "baseDir",
@@ -201,6 +202,7 @@ object UnusedCodePlugin extends AutoPlugin {
           excludeGitLastCommitDateTime = None,
           excludeMainMethod = true,
           excludeJEP512MainMethod = true,
+          excludeEnumCase = false,
           dialect = {
             if (dialects.nonEmpty) {
               dialects.max
