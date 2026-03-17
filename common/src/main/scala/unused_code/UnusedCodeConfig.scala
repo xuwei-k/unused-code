@@ -27,6 +27,7 @@ final case class UnusedCodeConfig(
   dialect: Dialect,
   excludeMethodRegex: Set[String],
   baseDir: String,
+  whenGitShallowRepository: WhenGitShallowRepository
 ) extends UnusedCodeConfigCompat {
   def pathMatchers: Seq[PathMatcher] = {
     val fs = FileSystems.getDefault
