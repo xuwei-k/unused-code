@@ -29,12 +29,12 @@ sealed abstract class UnusedCodeRule(config: UnusedCodeScalafixConfig, name: Str
     doc.tree
       .collect(UnusedCode.extractDefineValue)
       .collect {
-        case (tree, _, treeName) if unusedNames.contains(treeName) && !CheckUnusedAnnotation.exists(tree) =>
+        case (tree, _, treeName) if unusedNames.contains(treeName.value) && !CheckUnusedAnnotation.exists(tree) =>
           Patch.lint(
             Diagnostic(
               id = "",
               message = "maybe unused",
-              position = tree.pos,
+              position = treeName.pos,
               severity = severity
             )
           )

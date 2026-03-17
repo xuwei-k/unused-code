@@ -58,7 +58,7 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
         case t: Pkg.Object if isTopLevel(t) => t
       }
       val removeTrees = src.collect(UnusedCode.extractDefineValue).collect {
-        case (tree, _, name) if unusedNames.contains(name) =>
+        case (tree, _, treeName) if unusedNames.contains(treeName.value) =>
           tree
       }
       topLevelValues == removeTrees
@@ -67,18 +67,18 @@ class RemoveUnusedCode(config: UnusedCodeScalafixConfig) extends SyntacticRule("
       doc.tree
         .collect(UnusedCode.extractDefineValue)
         .collect {
-          case (tree, _, name) if unusedNames.contains(name) && !CheckUnusedAnnotation.exists(tree) =>
+          case (tree, _, treeName) if unusedNames.contains(treeName.value) && !CheckUnusedAnnotation.exists(tree) =>
             if (tree.is[Defn.Def]) {
               tree.parent
                 .flatMap(_.parent)
                 .collect {
                   case ext @ Defn.ExtensionGroup.After_4_6_0(_, Term.Block((d: Defn.Def) :: Nil))
-                      if d.name.value == name =>
+                      if d.name.value == treeName.value =>
                     Patch.removeTokens(ext.tokens)
                 }
                 .orElse(
                   tree.parent.collect {
-                    case ext @ Defn.ExtensionGroup.After_4_6_0(_, d: Defn.Def) if d.name.value == name =>
+                    case ext @ Defn.ExtensionGroup.After_4_6_0(_, d: Defn.Def) if d.name.value == treeName.value =>
                       Patch.removeTokens(ext.tokens)
                   }
                 )
