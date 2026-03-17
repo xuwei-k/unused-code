@@ -44,6 +44,8 @@ object UnusedCode {
       implicitly[ConfDecoder[String]].map(unused_code.Dialect.map)
     implicit val dateTimeDecoder: ConfDecoder[ZonedDateTime] =
       implicitly[ConfDecoder[String]].map(ZonedDateTime.parse)
+    implicit val whenGitShallowRepositoryDecoder: ConfDecoder[WhenGitShallowRepository] =
+      implicitly[ConfDecoder[String]].map(WhenGitShallowRepository.map)
     val empty = UnusedCodeConfig(
       files = Nil,
       scalafixConfigPath = None,
@@ -57,6 +59,7 @@ object UnusedCode {
       dialect = Dialect.Scala213Source3,
       excludeMethodRegex = Set.empty,
       baseDir = "",
+      whenGitShallowRepository = WhenGitShallowRepository.default
     )
     metaconfig.generic.deriveDecoder[UnusedCodeConfig](empty)
   }
@@ -172,20 +175,46 @@ object UnusedCode {
     ).lineStream_!.headOption
   }
 
-  private[this] def lastGitCommitMilliSeconds(base: String, path: String): Long = {
+  private def checkShallowRepository(base: String, whenGitShallowRepository: WhenGitShallowRepository): Unit = {
+    def isShallow(): Boolean =
+      runProcess(base, Seq("git", "rev-parse", "--is-shallow-repository")).exists(_.trim == "true")
+    whenGitShallowRepository match {
+      case WhenGitShallowRepository.Silent =>
+      case WhenGitShallowRepository.Warning =>
+        if (isShallow()) {
+          Console.err.println("[warn] This is a shallow-repository")
+        }
+      case WhenGitShallowRepository.Error =>
+        if (isShallow()) {
+          sys.error("This is a shallow-repository")
+        }
+    }
+  }
+
+  private[this] def lastGitCommitMilliSeconds(
+    base: String,
+    path: String,
+    whenGitShallowRepository: WhenGitShallowRepository
+  ): Long = {
     val default = 0L
     // https://git-scm.com/docs/git-log
     if (new File(base, ".git").isDirectory) {
+      checkShallowRepository(base, whenGitShallowRepository)
       runProcess(base, Seq("git", "log", "-1", "--format=%ct", path)).map(_.toLong * 1000L).getOrElse(default)
     } else {
       default
     }
   }
 
-  private[this] def lastGitCommitDateTime(base: String, path: String): ZonedDateTime = {
+  private[this] def lastGitCommitDateTime(
+    base: String,
+    path: String,
+    whenGitShallowRepository: WhenGitShallowRepository
+  ): ZonedDateTime = {
     val default = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"))
     // https://git-scm.com/docs/git-log
     if (new File(base, ".git").isDirectory) {
+      checkShallowRepository(base, whenGitShallowRepository)
       runProcess(base, Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:%cd", path))
         .map(ZonedDateTime.parse)
         .getOrElse(default)
@@ -213,12 +242,16 @@ object UnusedCode {
       .filter(x =>
         config.excludeGitLastCommit match {
           case Some(duration) if duration.isFinite =>
-            duration < (currentMillis - lastGitCommitMilliSeconds(config.baseDir, x.path)).millis
+            duration < (currentMillis - lastGitCommitMilliSeconds(
+              config.baseDir,
+              x.path,
+              config.whenGitShallowRepository
+            )).millis
           case _ =>
             config.excludeGitLastCommitDateTime match {
               case Some(dateTime) =>
                 import Ordering.Implicits.*
-                dateTime > lastGitCommitDateTime(config.baseDir, x.path)
+                dateTime > lastGitCommitDateTime(config.baseDir, x.path, config.whenGitShallowRepository)
               case None =>
                 true
             }

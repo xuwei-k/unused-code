@@ -38,8 +38,10 @@ object UnusedCodePlugin extends AutoPlugin {
       from(strFormat)(Duration.apply, _.toString)
     implicit val dialectInstance: JsonFormat[Dialect] =
       from(strFormat)(Dialect.map, _.value)
+    implicit val whenGitShallowRepositoryInstance: JsonFormat[WhenGitShallowRepository] =
+      from(strFormat)(WhenGitShallowRepository.map, _.value)
 
-    caseClass12(UnusedCodeConfig.apply, (_: UnusedCodeConfig).asTupleOption)(
+    caseClass13(UnusedCodeConfig.apply, (_: UnusedCodeConfig).asTupleOption)(
       "files",
       "scalafixConfigPath",
       "excludeNameRegex",
@@ -52,6 +54,7 @@ object UnusedCodePlugin extends AutoPlugin {
       "dialect",
       "excludeMethodRegex",
       "baseDir",
+      "whenGitShallowRepository",
     )
   }
 
@@ -217,7 +220,8 @@ object UnusedCodePlugin extends AutoPlugin {
             "unapplySeq",
             "update",
           ),
-          baseDir = (LocalRootProject / baseDirectory).value.getCanonicalPath
+          baseDir = (LocalRootProject / baseDirectory).value.getCanonicalPath,
+          whenGitShallowRepository = WhenGitShallowRepository.default,
         )
       }
     }.value,

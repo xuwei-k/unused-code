@@ -16,6 +16,8 @@ object UnusedCodeConfigTest extends Scalaprops {
 
   implicit val configGen: Gen[UnusedCodeConfig] = {
     implicit val s: Gen[String] = Gen.alphaNumString
+    implicit val whenGitShallowRepository: Gen[WhenGitShallowRepository] =
+      Gen.elements(WhenGitShallowRepository.all.head, WhenGitShallowRepository.all.tail*)
     implicit val dialect: Gen[Dialect] = {
       val x +: xs = Dialect.all
       Gen.elements(x, xs*)
@@ -36,7 +38,7 @@ object UnusedCodeConfigTest extends Scalaprops {
           ZonedDateTime.ofInstant(_, zone)
         )
     }
-    Gen.from12(UnusedCodeConfig.apply)
+    Gen.from13(UnusedCodeConfig.apply)
   }
 
   val test = Property.forAll { (c1: UnusedCodeConfig) =>
