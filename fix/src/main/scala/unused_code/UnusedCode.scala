@@ -165,28 +165,30 @@ object UnusedCode {
   }
 
   @nowarn("msg=lineStream")
+  private def runProcess(base: String, command: Seq[String]): Option[String] = {
+    Process(
+      command = command,
+      cwd = Some(new File(base))
+    ).lineStream_!.headOption
+  }
+
   private[this] def lastGitCommitMilliSeconds(base: String, path: String): Long = {
     val default = 0L
     // https://git-scm.com/docs/git-log
     if (new File(base, ".git").isDirectory) {
-      Process(
-        command = Seq("git", "log", "-1", "--format=%ct", path),
-        cwd = Some(new File(base))
-      ).lineStream_!.headOption.map(_.toLong * 1000L).getOrElse(default)
+      runProcess(base, Seq("git", "log", "-1", "--format=%ct", path)).map(_.toLong * 1000L).getOrElse(default)
     } else {
       default
     }
   }
 
-  @nowarn("msg=lineStream")
   private[this] def lastGitCommitDateTime(base: String, path: String): ZonedDateTime = {
     val default = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"))
     // https://git-scm.com/docs/git-log
     if (new File(base, ".git").isDirectory) {
-      Process(
-        command = Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:%cd", path),
-        cwd = Some(new File(base))
-      ).lineStream_!.headOption.map(ZonedDateTime.parse).getOrElse(default)
+      runProcess(base, Seq("git", "log", "-1", "--date=iso-strict", "--pretty=tformat:%cd", path))
+        .map(ZonedDateTime.parse)
+        .getOrElse(default)
     } else {
       default
     }
