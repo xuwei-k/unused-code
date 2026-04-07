@@ -112,7 +112,7 @@ lazy val plugin = projectMatrix
     },
     description := "find unused code sbt plugin",
     scalapropsSettings,
-    scalapropsVersion := "0.10.0",
+    scalapropsVersion := "0.10.1",
     addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % _root_.scalafix.sbt.BuildInfo.scalafixVersion),
     scriptedLaunchOpts += "-Dplugin.version=" + version.value,
     scriptedBufferLog := false,
