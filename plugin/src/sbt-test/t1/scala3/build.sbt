@@ -1,5 +1,5 @@
-import sjsonnew.support.scalajson.unsafe.Parser.parseFromFile
 import scala.util.Success
+import sjsonnew.support.scalajson.unsafe.Parser.parseFromFile
 
 TaskKey[Unit]("check1") := {
   val Success(x1) = parseFromFile(file("expect1.json"))
@@ -14,7 +14,7 @@ TaskKey[Unit]("check2") := {
 }
 
 val commonSettings = Def.settings(
-  scalaVersion := "3.8.2",
+  scalaVersion := "3.8.3",
 )
 
 commonSettings
