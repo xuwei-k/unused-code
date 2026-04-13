@@ -10,5 +10,5 @@ object ExtensionTest {
   }
 
   extension(x: Int)
-    def y3: Int = x + 3
+  def y3: Int = x + 3
 }

@@ -1,5 +1,5 @@
-import sjsonnew.support.scalajson.unsafe.Parser.parseFromFile
 import scala.util.Success
+import sjsonnew.support.scalajson.unsafe.Parser.parseFromFile
 
 val commonSettings = Def.settings(
   scalaVersion := "2.13.18",
