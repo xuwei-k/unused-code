@@ -17,7 +17,23 @@ addSbtPlugin("com.github.xuwei-k" % "unused-code-plugin" % "version")
 
 ```
 > unusedCode
+```
+
+and then
+
+```
 > scalafix WarnUnusedCode
+```
+
+or
+
+```
+> scalafix ErrorUnusedCode
+```
+
+or
+
+```
 > scalafix RemoveUnusedCode
 ```
 
