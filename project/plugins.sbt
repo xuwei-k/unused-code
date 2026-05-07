@@ -10,6 +10,6 @@ addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.5.3")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.6")
 
-addSbtPlugin("com.github.xuwei-k" % "scalafix-rule-resource-gen" % "0.1.2")
+addSbtPlugin("com.github.xuwei-k" % "scalafix-rule-resource-gen" % "0.1.3")
 
 libraryDependencies += "com.github.xuwei-k" %% "scala-version-from-sbt-version" % "0.1.0"
