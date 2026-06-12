@@ -156,7 +156,7 @@ lazy val fix = projectMatrix
     commonSettings,
     name := "unused-code-scalafix",
     description := "scalafix rules unused-code",
-    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.6",
+    libraryDependencies += "ch.epfl.scala" %% "scalafix-core" % "0.14.7",
   )
   .defaultAxes(VirtualAxis.jvm)
   .jvmPlatform(Seq(Scala212, Scala213))
