@@ -1,7 +1,7 @@
 import sbtrelease.ReleasePlugin.autoImport.ReleaseTransformations._
 
 def sbt2 = "2.0.1"
-def sbt1 = "1.12.12"
+def sbt1 = "1.12.13"
 val Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1)
 val Scala213 = "2.13.18"
 val Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)
