@@ -5,7 +5,7 @@ val sbt2 = {
   p.load(new java.io.FileInputStream("project/build.properties"))
   p.getProperty("sbt.version").trim
 }
-def sbt1 = "1.12.13"
+def sbt1 = "1.12.14"
 val Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1)
 val Scala213 = "2.13.18"
 val Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)
