@@ -7,7 +7,7 @@ val sbt2 = {
 }
 def sbt1 = "1.13.0"
 val Scala212 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt1)
-val Scala213 = "2.13.18"
+val Scala213 = "3.9.0"
 val Scala3 = scala_version_from_sbt_version.ScalaVersionFromSbtVersion(sbt2)
 
 val commonSettings = Def.settings(
