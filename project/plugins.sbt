@@ -4,7 +4,7 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
 
 addSbtPlugin("com.github.sbt" % "sbt-release" % "1.5.0")
 
-addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.5.3")
+addSbtPlugin("com.github.scalaprops" % "sbt-scalaprops" % "0.6.0")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
 
